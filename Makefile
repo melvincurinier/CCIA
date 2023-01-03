@@ -16,11 +16,14 @@ combat.o: combat.c pokedex.h list.h pokemon.h
 joueur.o: joueur.c combat.h pokedex.h list.h pokemon.h
 	${CC} ${CCFLAGS} -c joueur.c
 
-main.o: main.c joueur.h combat.h pokedex.h list.h pokemon.h
+ia.o: ia.c joueur.h combat.h pokedex.h list.h pokemon.h
+	${CC} ${CCFLAGS} -c ia.c
+
+main.o: main.c ia.h joueur.h combat.h pokedex.h list.h pokemon.h
 	${CC} ${CCFLAGS} -c main.c 
 
-main: main.o joueur.o combat.o pokedex.o list.o
-	${CC} ${CCFLAGS} -o main main.o joueur.o combat.o pokedex.o list.o
+main: main.o ia.o joueur.o combat.o pokedex.o list.o
+	${CC} ${CCFLAGS} -o main main.o ia.o joueur.o combat.o pokedex.o list.o
 
 clean:
 	rm *.o

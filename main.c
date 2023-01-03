@@ -1,4 +1,4 @@
-#include "joueur.h"
+#include "ia.h"
 
 
 // int main(){
@@ -52,26 +52,20 @@ int main(){
 
 //--------------- choix des action -------------------//
     //le J1 joue
-        printf("J1 : ");
-        choix1 = choix_action_joueur();
+        choix1 = choix_action_ia();
         if(choix1 == 0){
-            printf("J1 : ");
-            att1= choix_att_joueur(T->pokeJ1);
+            att1= choix_att_ia(T->pokeJ1);
         }
         else{
-            printf("J1 : ");
-            poke1=choix_switch_joueur(J1);
+            poke1=choix_switch_ia(J1);
         }
     //le J2 joue a son tour
-        printf("J2 : ");
-        choix2 = choix_action_joueur();
+        choix2 = choix_action_ia();
         if(choix2 == 0){
-            printf("J2 : ");
-            att2= choix_att_joueur(T->pokeJ2);
+            att2= choix_att_ia(T->pokeJ2);
         }
         else{
-            printf("J2 : ");
-            poke2=choix_switch_joueur(J2);
+            poke2=choix_switch_ia(J2);
         }
 
 //-------------Deroulement du tour de jeu---------------//
@@ -121,8 +115,7 @@ int main(){
             enlever_pokemon_equipe(J1,T->pokeJ1);
             //on en choisie un nouveau
             printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            printf("J1 : ");
-            poke1 = choix_switch_joueur(J1);
+            poke1 = choix_switch_ia(J1);
             switch_pokemon(T,poke1,1);
         }
         //dans ce cas c'est le dernier pokemon qui viens de mourir
@@ -135,8 +128,7 @@ int main(){
         if(mort(T->pokeJ2) && J2->nb_vivant>1){
             enlever_pokemon_equipe(J2,T->pokeJ2);
             printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            printf("J2 : ");
-            poke2 = choix_switch_joueur(J2);
+            poke2 = choix_switch_ia(J2);
             switch_pokemon(T,poke2,2);
         }
         else if (mort(T->pokeJ2) && J2->nb_vivant <=1 ){
