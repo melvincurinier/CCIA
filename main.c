@@ -5,12 +5,23 @@
 //     pile p=create_empty_stack();
 //     creer_pokedex(p);
 //     //afficher_pokedex(p);
-//     equipe J1,J2;
+//     equipe *J1,*J2;
 //     attaques att1, att2;
 //     int tour=0;
 //     J1 = init_equipe (p);
 //     J2 = init_equipe (p);
-//     terrain T = init_terrain(J1,J2);
+//     terrain *T = init_terrain(J1,J2);
+//     Item *node=nodeAlloc();
+//     node->T=T;
+//     list_t *l=malloc(sizeof(list_t));
+//     initList(l);
+//     printf("nb d'el de la liste : %d\n",listCount(l));
+//     addFirst(l,node);
+//     printList(*l);
+//     popBest(l);
+//     printList(*l);
+
+    
 //    J1 = switch_pokemon(J1, J1.liste_pokemon[2]);
 //     while(!partie_fini(J1, J2)){
 //         afficher_terrain(T,J1,J2);
@@ -26,7 +37,7 @@
 //     // printf("%d \n", toucher(J1.liste_pokemon[0].attaque[0]));
 //     // J1 = switch_pokemon(J1,J1.liste_pokemon[2]);
 //     // afficher_terrain(T,J1,J2); 
-//     return 0;
+//      return 0;
 // } 
 
 
@@ -34,9 +45,11 @@
 int main(){
 
     int choix1,choix2;
-    attaques att1,att2;
+    attaques att1;
+    attaques att2;
     pokemon *poke1;
     pokemon *poke2;
+    Item *decision_ia;
     int tour=0;
 
 
@@ -52,20 +65,25 @@ int main(){
 
 //--------------- choix des action -------------------//
     //le J1 joue
-        choix1 = choix_action_ia();
+        printf("J1 : ");
+        choix1 = choix_action_joueur();
         if(choix1 == 0){
-            att1= choix_att_ia(T->pokeJ1);
+            printf("J1 : ");
+            att1= choix_att_joueur(T->pokeJ1);
         }
         else{
-            poke1=choix_switch_ia(J1);
+            printf("J1 : ");
+            poke1=choix_switch_joueur(J1);
         }
     //le J2 joue a son tour
-        choix2 = choix_action_ia();
-        if(choix2 == 0){
-            att2= choix_att_ia(T->pokeJ2);
+        printf("J2 : ");
+        decision_ia = ia(T,tour);
+        choix2 = decision_ia->choix;
+        if(choix2==0){
+            att2=decision_ia->AT;
         }
         else{
-            poke2=choix_switch_ia(J2);
+            poke2=decision_ia->poke;
         }
 
 //-------------Deroulement du tour de jeu---------------//
@@ -115,7 +133,8 @@ int main(){
             enlever_pokemon_equipe(J1,T->pokeJ1);
             //on en choisie un nouveau
             printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            poke1 = choix_switch_ia(J1);
+            printf("J1 : ");
+            poke1 = choix_switch_joueur(J1);
             switch_pokemon(T,poke1,1);
         }
         //dans ce cas c'est le dernier pokemon qui viens de mourir
@@ -128,7 +147,8 @@ int main(){
         if(mort(T->pokeJ2) && J2->nb_vivant>1){
             enlever_pokemon_equipe(J2,T->pokeJ2);
             printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            poke2 = choix_switch_ia(J2);
+            printf("J2 : ");
+            poke2 = choix_switch_ia_random(J2);
             switch_pokemon(T,poke2,2);
         }
         else if (mort(T->pokeJ2) && J2->nb_vivant <=1 ){

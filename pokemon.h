@@ -71,7 +71,6 @@ typedef struct{
     int tour_meteo;
     pokemon * pokeJ1;
     pokemon * pokeJ2;
+    equipe * player1;
+    equipe * player2;
 }  terrain ;
-
-
-

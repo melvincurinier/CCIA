@@ -1,9 +1,6 @@
-#include "joueur.h"
+#include "node.h"
 
-void action_ia_basique(terrain *T, equipe *J1);
+pokemon *choix_switch_ia_random(equipe *J1);
 
-int choix_action_ia();
+Item *ia(terrain *T, int tour);
 
-attaques choix_att_ia(pokemon *poke);
-
-pokemon *choix_switch_ia(equipe *J1);
