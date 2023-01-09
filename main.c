@@ -1,5 +1,13 @@
 #include "joueur.h"
+#include <SDL.h>
 
+
+int main(int argc,char **argv){
+    SDL_version nb;
+    SDL_VERSION(&nb);
+
+    printf("SDL %d.%d.%d \n", nb.major,nb.minor,nb.patch);
+}
 
 // int main(){
 //     pile p=create_empty_stack();
@@ -30,7 +38,7 @@
 // } 
 
 
-
+/*
 int main(){
 
     int choix1,choix2;
@@ -156,3 +164,4 @@ int main(){
         printf("Le gagnant est J1 ! \n");
     }
 }
+*/
