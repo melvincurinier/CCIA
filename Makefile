@@ -1,26 +1,35 @@
-CC = gcc
-CCFLAGS = -Wall -g
+# Compilator's variables
 
-all : main
+CC         = gcc
+CFLAGS     = -g -Wall -I include -I include/SDL2 -L lib -lmingw32 -lSDL2main # -lSDL2 -lSDL2_image -mwindows # Add SDL support on the linker
+RM         = del    # Windows = del // Unix = rm
 
+SOURCEDIR = src
+OBJECTDIR = obj
+OUTPUTDIR = bin
 
-list.o: list.c list.h pokemon.h
-	${CC} ${CCFLAGS} -c list.c
+FILES := $(wildcard $(SOURCEDIR)/*.c)
+OBJ := $(FILES:$(SOURCEDIR)%.c=$(OBJECTDIR)%.o)
 
-pokedex.o: pokedex.c pokedex.h pokemon.h list.h
-	${CC} ${CCFLAGS} -c pokedex.c
+# Compiling
 
-combat.o: combat.c pokedex.h list.h pokemon.h
-	${CC} ${CCFLAGS} -c combat.c
+.PHONY: all
+all: main
 
-joueur.o: joueur.c combat.h pokedex.h list.h pokemon.h
-	${CC} ${CCFLAGS} -c joueur.c
+main: $(OBJ)
+	$(CC) $^ -o $(OUTPUTDIR)/$@ $(CFLAGS)
 
-main.o: main.c joueur.h combat.h pokedex.h list.h pokemon.h
-	${CC} ${CCFLAGS} -c main.c 
+# All files obj compilation
 
-main: main.o joueur.o combat.o pokedex.o list.o
-	${CC} ${CCFLAGS} -o main main.o joueur.o combat.o pokedex.o list.o
+$(OBJECTDIR)/%.o: $(SOURCEDIR)/%.c
+	$(CC) -c $< -o $@ $(CFLAGS)
 
-clean:
-	rm *.o
+# May come in handy
+
+clear:
+	$(RM) $(OUTPUTDIR)\main $(RM) $(OBJECTDIR)\*.o
+
+# Recompile everthing
+
+again:
+	$(RM) $(OBJECTDIR)\*.o make
