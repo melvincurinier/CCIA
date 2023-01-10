@@ -1,5 +1,5 @@
 #include "joueur.h"
-
+#include "graphic.h"
 
 // int main(){
 //     pile p=create_empty_stack();
@@ -30,7 +30,7 @@
 // } 
 
 
-
+/*
 int main(){
 
     int choix1,choix2;
@@ -155,4 +155,127 @@ int main(){
     else {
         printf("Le gagnant est J1 ! \n");
     }
+}*/
+
+int main(int arg,char **argv){
+    SDL_Window * window = NULL;
+    SDL_Renderer * renderer = NULL;
+    SDL_Rect rectangle;
+    //--------- Initialisation de la SDL --------//
+        /*Verification du retour de la fonction d'initialisation*/
+    if(SDL_Init(SDL_INIT_VIDEO) != 0) SDL_ExitWithError("Initialisation SDL Failed");
+    //--------- Debut du programme ----------//
+    //
+    //----------- Creation de la fenètre ---------//
+    window = SDL_CreateWindow("Poket Monster",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,WINDOW_WIDTH,WINDOW_HEIGTH,0);
+        /*Verification de la bonne creation de la fenetre*/
+    if(window == NULL) SDL_ExitWithError(" Window creation failed");
+    //---------------------------------------------------//
+    //
+    //--------- Creation du rendu de la page ---------//
+    renderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_SOFTWARE);
+        /*Verification de la bonne creation du rendu*/
+    if(renderer == NULL) SDL_ExitWithError("Renderer creation failed");
+    //--------- Modification du rendu de la page ----------//
+    //   /*Verification que le cahngement de couleur a bien été effectuer*/
+    //if(SDL_SetRenderDrawColor(renderer,112,168,237,SDL_ALPHA_OPAQUE) != 0) SDL_ExitWithError("Renderer draw failed");
+    //
+    //if(SDL_RenderDrawPoint(renderer,100,450)!=0) SDL_ExitWithError("Renderer creation point failed");/*creation point*/
+    //
+    //if(SDL_RenderDrawLine(renderer,10,45,500,500)!=0) SDL_ExitWithError("Renderer creation line failed");/*creation ligne*/
+    //
+    //if(SDL_RenderFillRect(renderer,&rectangle)!=0) SDL_ExitWithError("Renderer creation rect failed");/*creation rectangle plein*/
+    //----------------------------------------------------//
+    //
+    //----------- Creation de texture ---------//
+   /*SDL_Surface * image =NULL;
+    SDL_Texture * background =NULL;
+
+    image = IMG_Load("src/ambiance.PNG");
+
+    if(image == NULL){
+        SDL_Destroyed(renderer,window);
+        SDL_ExitWithError("Renderer load image failed");
+    }
+
+    background = SDL_CreateTextureFromSurface(renderer,image);
+    SDL_FreeSurface(image);
+
+    if(background == NULL){
+        SDL_Destroyed(renderer,window);
+        SDL_ExitWithError("Renderer texture creation failed"); 
+    }
+
+    if(SDL_QueryTexture(background,NULL,NULL,&rectangle.w,&rectangle.h) != 0){
+        SDL_Destroyed(renderer,window);
+        SDL_ExitWithError("Renderer load texture failed"); 
+    }
+
+    rectangle.x=(WINDOW_WIDTH - rectangle.w)/2;
+    rectangle.y=(WINDOW_HEIGTH - rectangle.h)/2;
+
+    if(SDL_RenderCopy(renderer,background,NULL,&rectangle) !=0){
+        SDL_Destroyed(renderer,window);
+        SDL_ExitWithError("Renderer texture failed");//affihage  
+    }*/
+    //------------ Creation de la boucle du programme -------//
+    //
+    //------------ Gestion de fps --------------//
+    unsigned int frame_limit = 0;
+        /*comment limité les fps*/
+        /*
+            30fps 1000/30=33
+            60fps 1000/60=16 
+        */
+    frame_limit = SDL_GetTicks()+FPS_LIMIT; // en debut de programme 
+        /* fonction de gestion de l'animation*/
+    limit_fps(frame_limit);
+        /* a mettre en fin animation */
+    frame_limit = SDL_GetTicks()+FPS_LIMIT;
+    //-----------------------------------------//
+    SDL_bool program_lauched = SDL_TRUE;
+
+    while(program_lauched){
+        SDL_Event event;
+
+        while(SDL_PollEvent(&event)){
+            switch (event.type)
+            {
+                case SDL_QUIT://pour quitter le programme avec la croix
+                    program_lauched= SDL_FALSE;
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    //event.motion.x
+                    printf("CLick %dx|%dy \n",event.button.x,event.button.y);
+                    break;
+            //case SDL_KEYDOWN:
+            //    switch (event.key.keysym.sym)
+            //    {
+            //    case SDLK_b:
+            //        printf("b touche");
+            //        break;
+            //    
+            //    default:
+            //        break;
+            //    }
+            //    break;
+                default:
+                    break;
+            }
+        }
+    }
+    //------------------------------------------------------//
+    //
+    //----------------------------------------------------//
+
+    SDL_RenderPresent(renderer); /*Actualise le rendu*/ 
+    //SDL_DestroyTexture(background);
+    //-------------------------------------------------//
+    //
+    //--------- Fin du programme --------//
+        /*Fermeture de la fenetre et fin du main*/
+    SDL_Destroyed(renderer,window);
+    SDL_Quit();
+    return EXIT_SUCCESS;
 }
