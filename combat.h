@@ -6,6 +6,11 @@
 
 //initialise une equipe avec les premier pokemon presnt dans la pile
 equipe init_equipe(pile p);
+
+equipe init_equipe_alea(pile p);
+
+equipe choisir_equipe(pile p);
+
 //initialise la meteo a neutre
 //dans le futur gerer si des effest son apliqués au terrain
 terrain init_terrain(equipe J1, equipe J2);
