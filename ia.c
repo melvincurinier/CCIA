@@ -4,61 +4,115 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h>
 
 
+/*
+// player : 1 = MAX(bot) / 2 = MIN(joueur)
+// retourne l'item avec le meilleur terrain a la fin de l'execution
+void minimax(Item *node, int depth, int player, int tour, Item *bestMove){
+    Item *child ;
+    Item *mouv;
+    if(partie_fini(node->T) || depth == 10){
+        return;
+    }
+        //tour de MAX
+    else if(player == 1){
+            bestMove->f=INT_MIN;
+            //créer toutes les possibilités d'attaque possible
+            for(int i=0;i<node->T.J1.liste_pokemon[0].nb_attaque;i++){
+                child = get_child_att(node,node->T.J1.liste_pokemon[0].attaque[i],1,tour);
+                // printf("////////////////////////////////////////////////////          LE TERRAIN D UN CHILD POUR MAX      \n");
+                // afficher_terrain(child->T);
+                // printf("l'attaque correspndante : ");
+                // afficher_attaque(child->AT);
+                // printf("\n");
+                minimax(child,depth+1,2,tour+1,bestMove);
+                if(mouv->f > bestMove->f){
+                    bestMove = mouv;
+                }
+            }
+            // bestMove->parent->f=bestMove->f;
+            // printf("le f du parent : %f\n", bestMove->f);
+        }
+        //tour de MIN
+    else{
+           // printf("rentrer dans 2\n");
+            bestMove->f=INT_MAX;
+            //créer toutes les possibilités d'attaque possible
+            for(int j=0;j<node->T.J2.liste_pokemon[0].nb_attaque;j++){
+                child = get_child_att(node,node->T.J2.liste_pokemon[0].attaque[j],2,tour);
+                // printf("////////////////////////////////////////////////////           LE TERRAIN D UN CHILD POUR MIN      \n");
+                // afficher_terrain(child->T);
+                // printf("l'attaque correspndante : ");
+                // afficher_attaque(child->AT);
+                // printf("\n");
+                minimax(child,depth+1,1,tour+1,bestMove);
+                
+                if(mouv->f < bestMove->f){
+                    bestMove = mouv;
+                }
+            }
+            // bestMove->parent->f=bestMove->f;
+        }
+}
+*/
 
-pokemon *choix_switch_ia_random(equipe *J1){
-    srand(time(NULL));
-    int x = rand() % J1->nb_vivant;
-    pokemon *p = J1->liste_pokemon[x];
-    printf("J2 switch sur : %s\n",p->nom);
-    return p;
+
+Item * astar(int tour){
+    Item *node, *child;
+    int i,j;
+    while (listCount(&openlist) != 0){ // While items are on the open list
+        //printList(openlist);
+        // Get the best item on the open list
+        node = popBest(&openlist);
+        //afficher_terrain(node->T);
+
+        // Do we have a solution?
+        if (partie_fini(node->T) || node->depth >= 10 ) {
+            return back_track(node);
+        }
+        else{
+            for( i=0; i < node->T.J2.liste_pokemon[0].nb_attaque; i++){
+                child = get_child_att(node, node->T.J2.liste_pokemon[0].attaque[i],2, tour);
+                    addFirst(&openlist,child);
+                }
+            for( j=1; j < node->T.J2.nb_vivant; j++ ){
+                child = get_child_swt(node,node->T.J2.liste_pokemon[j],2);
+                    addFirst(&openlist,child);
+                }
+        }
+    }  
+
 }
 
-//créer toutes les possibilité de coup et les rajoutes à l'arbre
-// renvoie le meilleur coup possible ( valeurs definie dans f et calculé dans d'autre fonction)
-Item *ia(terrain *T, int tour){
-    Item *cur_node=nodeAlloc();
-    Item *child_p;
-    list_t openList_p;
-    initList(&openList_p);
-    int i,j,k;
-    initNode(cur_node,T);
-    printf("\n-----------------------------\n--------CUR NODE--------\n---------------------------\n");
-    printItem(cur_node);
-    /* créer toutes les poissibilités d'attaques et de switch */
-    //pour chaque attaque possible de J2
-    for ( i = 0; i < cur_node->T->pokeJ2->nb_attaque; i++) {
-        //pour chaque attaque possible de J1
-        for( k=0; k < cur_node->T->pokeJ1->nb_attaque; k++ ){
-             child_p = getChildNode_att_att(cur_node, cur_node->T->pokeJ1->attaque[0],cur_node->T->pokeJ2->attaque[0],tour);
-             addFirst( &openList_p, child_p );
-        }
-        //pour chaque switch possible de J1
-        for(j=0; j<cur_node->T->player1->nb_vivant;j++){
-            child_p = getChildNode_swt_att(cur_node,cur_node->T->pokeJ2->attaque[i],cur_node->T->player1->liste_pokemon[j],tour);
-            addLast (&openList_p, child_p);
-        }
-    }
-   // pour chaque switch possible de J2
-    for (int i=0; j<cur_node->T->player2->nb_vivant;j++){
-        //pour chaque attaque possible de J1
-        for( k=0; k < cur_node->T->pokeJ1->nb_attaque; k++ ){
-            child_p = getChildNode_att_swt(cur_node, cur_node->T->pokeJ2->attaque[k],cur_node->T->player2->liste_pokemon[i],tour);
-            addLast( &openList_p, child_p );
-        }
-        //pour chaque switch possible de J1
-        for(j=0; j<cur_node->T->player1->nb_vivant;j++){
-            child_p = getChildNode_swt_swt(cur_node,cur_node->T->player1->liste_pokemon[j],cur_node->T->player2->liste_pokemon[i],tour);
-            addLast (&openList_p, child_p);
-        }
-    }
-    //recupere le meilleur noeud en fonction des parametre definie
-/*--------------------pour le moment : recupere le premier elément c'est a dire le premier coup-------------*/
-    child_p = popFirst(&openList_p);
-    printf("\n-----------------------------\n--------CUR NODE--------\n---------------------------\n");
-    printItem(child_p);    
 
-  return child_p;
+Item *solution_secours(Item *node,int tour){
+    Item *best_node=nodeAlloc();
+    Item *child;
+    for(int i=0; i <= node->T.J2.liste_pokemon[0].nb_attaque; i++){
+        child = get_child_att(node, node->T.J2.liste_pokemon[0].attaque[i],2, tour);
+        printf("dans les attaque f = %0.1f\n",child->f);
+        if(child->f < best_node->f){
+            best_node=child;
+            printf("dans le if f=%0.1f\n",best_node->f);
+        }
+    }
+    // for(int j=1; j < node->T.J2.nb_vivant; j++ ){
+    //     child = get_child_swt(node,node->T.J2.liste_pokemon[j],2);
+    //     printf("dans les switch h = %0.1f\n",child->f);
+    //     if(child->f < best_node->f){
+    //         best_node=child;
+    //     }
+    // }
+    return best_node;
 }
 
+
+Item *back_track(Item *node){
+    Item *tmp = node;
+    while(tmp->parent->depth != 0 ){
+        tmp = tmp ->parent;
+    }
+    return tmp;
+}

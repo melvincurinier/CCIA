@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
 #include "arbre.h"
 
 /* Item Functions */
@@ -13,19 +14,16 @@ Item *nodeAlloc()
   node = (Item *) malloc( sizeof(Item) );
   assert(node);
 
-  node->T=NULL;
   node->parent = NULL;
   node->prev = NULL;
   node->next = NULL;
-  node->poke = NULL;
-  node->f = node->g = node->h = (double)0.0;
+  node->f = node->g = node->h = (double)INT_MAX;
 
   return node;
 }
 
 void freeItem( Item *node )
 {
-  if (node && node->T) free(node->T);
   if (node) free(node);
 }
 
@@ -57,6 +55,7 @@ int listCount( list_t *list )
 //   return NULL;
 // }
 
+/*
 Item* onList( list_t *list,terrain *T )
 {
     assert(list);  assert(T);
@@ -69,7 +68,7 @@ Item* onList( list_t *list,terrain *T )
     }
     return NULL;
 }
-
+*/
 // return and remove first item
 Item *popFirst( list_t *list ) //
 {
@@ -180,8 +179,17 @@ void cleanupList( list_t *list )
 void printList( list_t list ) {
 	Item *item = list.first;
   while (item) {
+    if( item->choix == 0 ){
+      printf("L'attaque qui est tester est : \n");
+      afficher_attaque(item->AT);
+      printf("\n");
+    }
+    else if( item->choix == 1){
+      printf("Le pokemon echanger est : %s\n", item->poke.nom);
+    }
     afficher_terrain(item->T);
     item = item->next;
+    printf("--------------------------------------------------------------\n-----------------------------------------------------------------\n");
   }
   printf(" (nb_items: %d)\n", list.numElements);
 }

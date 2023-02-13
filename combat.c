@@ -1,50 +1,83 @@
 #include "combat.h"
 
 /*-------------- Partie initialisation ----------------*/
-equipe *init_equipe(pile p){
-    equipe *team=malloc(sizeof(equipe));
-    team->nb_vivant=3;
-    for (int j=0; j<3;j++){
-        team->liste_pokemon[j]=pop(p);
+
+equipe init_equipe(pile p){
+    equipe team;
+    team.nb_vivant=6;
+    for (int j=0; j<6;j++){
+        team.liste_pokemon[j]=pop(p);
     }
     return team;
 }
 
-terrain *init_terrain(equipe *J1, equipe *J2){
-    terrain *t=malloc(sizeof(terrain));
-    t->meteo=rien;
-    t->pokeJ1 = J1->liste_pokemon[0];
-    t->pokeJ2 = J2->liste_pokemon[0];
+// equipe choisir_equipe(pile p){
+//     equipe E;
+//     E.nb_vivant=6;
+//     int numero;
+//     for(int i=0; i<6;i++){
+//         afficher_pokedex(p);
+//         printf("Choississez un pokemon");
+//         scanf("%d",&numero);
+//         E.nb_vivant++;
+//         E.liste_pokemon[i]=pop_selection(p,numero);
+//     }
+//     return E;
+// }
+
+terrain init_terrain(equipe J1, equipe J2){
+    terrain t;
+    t.meteo=rien;
+    t.J1 = J1;
+    t.J2 = J2;
     return t;
 }
 
 /*-------------- Partie affichage ----------------*/
-void afficher_equipe(equipe *E){
-    for (int i=0;i<E->nb_vivant;i++){
-        afficher_pokemon(E->liste_pokemon[i]);
+
+void afficher_equipe(equipe E){
+    for (int i=0;i<E.nb_vivant;i++){
+        afficher_pokemon(E.liste_pokemon[i]);
     }
 }
 
-void afficher_terrain(terrain *T){
+void afficher_terrain(terrain T){
     printf(" ----------- METEO ---------- \n");
-    afficher_meteo(T->meteo);
+    afficher_meteo(T.meteo);
     printf(" -----------SUR LE TERRAIN ---------- \n");
-    afficher_pokemon(T->pokeJ1);
+    afficher_pokemon(T.J1.liste_pokemon[0]);
     printf("           VS            \n");
-    afficher_pokemon(T->pokeJ2);
+    afficher_pokemon(T.J2.liste_pokemon[0]);
 }
 
 /*--------------Partie changement de pokemon-------------------*/
-void switch_pokemon(terrain *T, pokemon *poke, int joueur){
-    if(joueur==1){
-        T->pokeJ1=poke;
+
+terrain switch_pokemon(terrain T, int joueur, pokemon poke){
+    int i=0;
+    pokemon p;
+    if( joueur == 1){
+        p = T.J1.liste_pokemon[i];
+        while( i < T.J1.nb_vivant &&  p.nom != poke.nom ){
+            i++;
+            p=T.J1.liste_pokemon[i];
+        }
+        T.J1.liste_pokemon[i]=T.J1.liste_pokemon[0];
+        T.J1.liste_pokemon[0]=poke;
     }
-    else{
-        T->pokeJ2=poke;
+    else if( joueur == 2){
+        p = T.J2.liste_pokemon[i];
+        while( i < T.J2.nb_vivant &&  p.nom != poke.nom ){
+            i++;
+            p=T.J2.liste_pokemon[i];
+        }
+        T.J2.liste_pokemon[i]=T.J2.liste_pokemon[0];
+        T.J2.liste_pokemon[0]=poke;
     }
+    return T;
 }
 
 /*-------------- Partie attaque a degats brute ----------------*/
+
 double calcul_multiplicateur(Types offensive, Types defensive){
     double x;
     switch (offensive){
@@ -389,7 +422,7 @@ int stab(attaques att, pokemon poke){
     return (att.type==poke.type);
 }
 
-int calcul_pv_perdu(terrain *T, pokemon poke1, pokemon poke2, attaques att){
+int calcul_pv_perdu(terrain T, pokemon poke1, pokemon poke2, attaques att){
     int degats;
     double multiplicateur;
     double boost_meteo=1;
@@ -400,102 +433,114 @@ int calcul_pv_perdu(terrain *T, pokemon poke1, pokemon poke2, attaques att){
         degats = ( ( 22 * poke1.attaque->puissance * poke1.stat.attaque_spe ) / (50 * poke2.stat.defense_spe) ) + 2;
     }
     if (stab(att,poke1)){
-        degats = degats * 2;
+        degats = degats *2;
     }
-    /*------------test des effets de la meteo-----------*/
-    if(T->meteo==soleil){
-        if(att.type==feu){
+    multiplicateur = calcul_multiplicateur(att.type, poke2.type);
+
+    if(T.meteo == soleil){
+        if(att.type == feu){
             boost_meteo=1.5;
         }
         else if(att.type==eau){
-            boost_meteo=0.5;
+            boost_meteo = 0.5;
         }
     }
-    else if(T->meteo==pluie){
-        if(att.type==eau){
-            boost_meteo=1.5;
+    else if(T.meteo == pluie){
+        if(att.type == feu){
+            boost_meteo = 0.5;
         }
-        else if(att.type==feu){
-            boost_meteo=0.5;
+        else if( att.type == eau){
+            boost_meteo = 1.5;
         }
     }
-    multiplicateur = calcul_multiplicateur(att.type, poke2.type);
+
     degats = degats * multiplicateur * boost_meteo;
+
 
     return degats;
 }
 
 /*-------------- Partie attaque et gestion de changement de statut ----------------*/
-void applique_confusion(terrain *T, pokemon * poke,attaques att){
-    int degats = calcul_pv_perdu(T,*poke,*poke,att);
-    poke->stat.PV = poke->stat.PV - degats;
+
+pokemon applique_confusion(terrain T,pokemon poke,attaques att){
+    int degats = calcul_pv_perdu(T,poke,poke,att);
+    poke.stat.PV = poke.stat.PV - degats;
+    return poke;
 }
 
-void applique_paralisie(pokemon * poke ){
-    poke->etat = paraliser;
-    poke->stat.vitesse = poke->stat.vitesse - (poke->stat.vitesse * 0.25) ;
+pokemon applique_paralisie(pokemon p){
+    p.etat = paraliser;
+    p.stat.vitesse = p.stat.vitesse - (p.stat.vitesse * 0.25) ;
+    return p;
 }
 
-void applique_degats_empoisonnement(pokemon * poke){
-    printf("le pokemon est empoisoner\n");
-    poke->stat.PV = poke->stat.PV - (poke->stat.PV_max * 0.125) ;
+pokemon applique_degats_empoisonnement(pokemon p){
+   // printf("le pokemon est empoisoner\n");
+    p.stat.PV = p.stat.PV - (p.stat.PV_max * 0.125) ;
+    return p;
 }
 
-void applique_degats_brulure(pokemon * poke){
-    printf("le pokemon souffre de sa brulure\n");
-    poke->stat.attaque = poke->stat.attaque - (poke->stat.attaque * 0.5);
-    poke->stat.PV = poke->stat.PV - (poke->stat.PV * 0.0625); 
+pokemon applique_degats_brulure(pokemon p){
+   // printf("le pokemon souffre de sa brulure\n");
+    p.stat.attaque = p.stat.attaque - (p.stat.attaque * 0.5);
+    p.stat.PV = p.stat.PV - (p.stat.PV * 0.0625); 
+    return p;
 }
 
-void degele(pokemon * poke){
+pokemon degele(pokemon poke){
     srand(time(NULL));
     int x=rand()%100;
     if(x<=20){
-        printf("le pokemon n'est plus geler !");
-        poke->etat=neutre;
+       // printf("le pokemon n'est plus geler !");
+        poke.etat=neutre;
     }
+    return poke;
 }
 
-void reveil(pokemon * poke, int tour){
+pokemon reveil(pokemon poke, int tour){
     srand(time(NULL));
     int x=rand()%4 + 1 ;
     if(x<=tour){
-        printf("le pokemon se reveil !\n");
-        poke->etat=neutre;
+       // printf("le pokemon se reveil !\n");
+        poke.etat=neutre;
     }
+    return poke;
 }
 
-void enleve_confusion(pokemon * poke, int tour){
+pokemon enleve_confusion(pokemon poke, int tour){
     srand(time(NULL));
     int x=rand()%5 + 1 ;
     if(x<tour){
-        poke->etat=neutre;
+        poke.etat=neutre;
     }
+    return poke;
 }
 
-void gestion_statut(pokemon * poke, int tour){
-    switch (poke->etat){
+pokemon gestion_statut(pokemon poke, int tour){
+    switch (poke.etat){
         case brulure:
-            applique_degats_brulure(poke);
+            poke=applique_degats_brulure(poke);
             break;
         case empoisoner:
-            applique_degats_empoisonnement(poke);
+            poke = applique_degats_empoisonnement(poke);
             break;
         case geler:
-            degele(poke);
+            poke = degele(poke);
             break;
         case confusion:
-            enleve_confusion(poke, tour);
+            poke= enleve_confusion(poke, tour);
             break;
         case endormie:
-            reveil(poke,tour);
+            poke = reveil(poke,tour);
             break;
         default:
             break;
-        }     
+        }
+        return poke;      
 }
 
 /*-------------- Partie attaque à changement de stat ----------------*/
+
 double fraction(int f){
     double x;
     if(f==0){
@@ -540,192 +585,204 @@ double fraction(int f){
     return x;
 }
 
-void applique_nerf(pokemon * poke, attaques att){
-    double x;
+pokemon applique_nerf(pokemon poke, attaques att){
+     double x;
      for(int i=0;i<att.nb_s;i++){
         switch(att.s[i]){
             case 1:
-                if(poke->stat.niv_att == -6){
-                    printf("la stat est deja au plus bas\n");
+                if(poke.stat.niv_att == -6){
+                   // printf("la stat est deja au plus bas\n");
                 }
                 else{
-                    poke->stat.niv_att = poke->stat.niv_att - att.boost;
-                    x = fraction(poke->stat.niv_att);
-                    poke->stat.attaque = poke->stat.attaque_initial * x;
+                    poke.stat.niv_att = poke.stat.niv_att - att.boost;
+                    x = fraction(poke.stat.niv_att);
+                    poke.stat.attaque = poke.stat.attaque_initial * x;
                 }
                 break;
             case 2:
-                if(poke->stat.niv_att_spe == -6){
-                    printf("la stat est deja au plus bas\n");
+                if(poke.stat.niv_att_spe == -6){
+                    //printf("la stat est deja au plus bas\n");
                 }
                 else{
-                    poke->stat.niv_att_spe = poke->stat.niv_att_spe - att.boost;
-                    x = fraction(poke->stat.niv_att_spe);
-                    poke->stat.attaque_spe = poke->stat.attaque_spe_initial * x;
+                    poke.stat.niv_att_spe = poke.stat.niv_att_spe - att.boost;
+                    x = fraction(poke.stat.niv_att_spe);
+                    poke.stat.attaque_spe = poke.stat.attaque_spe_initial * x;
                 }
                 break;
             case 3:
-                if(poke->stat.niv_def == -6){
-                    printf("la stat est deja au plus bas\n");
+                if(poke.stat.niv_def == -6){
+                   // printf("la stat est deja au plus bas\n");
                 }
                 else{
-                    poke->stat.niv_def = poke->stat.niv_def - att.boost;
-                    x = fraction( poke->stat.niv_def);
-                    poke->stat.defense = poke->stat.defense_initial * x;
+                    poke.stat.niv_def = poke.stat.niv_def - att.boost;
+                    x = fraction( poke.stat.niv_def);
+                    poke.stat.defense = poke.stat.defense_initial * x;
                 }
                 break;
             case 4:
-                if(poke->stat.niv_def_spe == -6){
-                    printf("la stat est deja au plus bas\n");
+                if(poke.stat.niv_def_spe == -6){
+                   // printf("la stat est deja au plus bas\n");
                 }
                 else{
-                    poke->stat.niv_def_spe= poke->stat.niv_def_spe - att.boost;
-                   x = fraction(poke->stat.niv_def_spe);
-                   poke->stat.defense_spe = poke->stat.defense_spe_initial * x;
+                    poke.stat.niv_def_spe= poke.stat.niv_def_spe - att.boost;
+                   x = fraction(poke.stat.niv_def_spe);
+                   poke.stat.defense_spe = poke.stat.defense_spe_initial * x;
                 }
                 break;
             case 5:
-                if(poke->stat.niv_vit == -6){
-                    printf("la stat est deja au plus bas\n");
+                if(poke.stat.niv_vit == -6){
+                    //printf("la stat est deja au plus bas\n");
                 }
                 else{
-                    poke->stat.niv_vit = poke->stat.niv_vit - att.boost;
-                    x = fraction( poke->stat.niv_vit);
-                    poke->stat.vitesse = poke->stat.vitesse_initial * x;
+                    poke.stat.niv_vit = poke.stat.niv_vit - att.boost;
+                    x = fraction( poke.stat.niv_vit);
+                    poke.stat.vitesse = poke.stat.vitesse_initial * x;
                 }
                 break;
             default:
                 break;
         }
      }
-} 
+     return poke;
+}
 
-void applique_boost(pokemon *poke, attaques att){
+pokemon applique_boost(pokemon poke, attaques att){
     double x;
      for(int i=0;i<att.nb_s;i++){
         switch(att.s[i]){
             case 1:
-                if(poke->stat.niv_att == 6){
-                    printf("la stat est deja au plus haut\n");
+                if(poke.stat.niv_att == 6){
+                    //printf("la stat est deja au plus haut\n");
                 }
                 else{
-                    poke->stat.niv_att = poke->stat.niv_att + att.boost;
-                    x = fraction( poke->stat.niv_att);
-                    poke->stat.attaque = poke->stat.attaque_initial * x;
+                    poke.stat.niv_att = poke.stat.niv_att + att.boost;
+                    x = fraction(poke.stat.niv_att);
+                    poke.stat.attaque = poke.stat.attaque_initial * x;
                 }
                 break;
             case 2:
-                if(poke->stat.niv_att_spe == 6){
-                    printf("la stat est deja au plus haut\n");
+                if(poke.stat.niv_att_spe == 6){
+                   // printf("la stat est deja au plus haut\n");
                 }
                 else{
-                    poke->stat.niv_att_spe = poke->stat.niv_att_spe + att.boost;
-                    x = fraction( poke->stat.niv_att_spe);
-                    poke->stat.attaque_spe = poke->stat.attaque_spe_initial * x;
+                    poke.stat.niv_att_spe = poke.stat.niv_att_spe + att.boost;
+                    x = fraction(poke.stat.niv_att_spe);
+                    poke.stat.attaque_spe = poke.stat.attaque_spe_initial * x;
                 }
                 break;
             case 3:
-                if(poke->stat.niv_def == 6){
-                    printf("la stat est deja au plus haut\n");
+                if(poke.stat.niv_def == 6){
+                   // printf("la stat est deja au plus haut\n");
                 }
                 else{
-                    poke->stat.niv_def = poke->stat.niv_def + att.boost;
-                    x = fraction( poke->stat.niv_def);
-                    poke->stat.defense =(int) (poke->stat.defense_initial * x);
+                    poke.stat.niv_def = poke.stat.niv_def + att.boost;
+                    x = fraction( poke.stat.niv_def);
+                    poke.stat.defense = poke.stat.defense_initial * x;
                 }
                 break;
             case 4:
-                
-                if(poke->stat.niv_def_spe == 6){
-                    printf("la stat est deja au plus haut\n");
+                if(poke.stat.niv_def_spe == 6){
+                    //printf("la stat est deja au plus haut\n");
                 }
                 else{
-                    poke->stat.niv_def_spe= poke->stat.niv_def_spe + att.boost;
-                    x = fraction( poke->stat.niv_def_spe);
-                    poke->stat.defense_spe = poke->stat.defense_spe_initial * x;
+                    poke.stat.niv_def_spe= poke.stat.niv_def_spe + att.boost;
+                   x = fraction(poke.stat.niv_def_spe);
+                   poke.stat.defense_spe = poke.stat.defense_spe_initial * x;
                 }
                 break;
             case 5:
-                
-                if(poke->stat.niv_vit ==6){
-                    printf("la stat est deja au plus haut\n");
+                if(poke.stat.niv_vit == 6){
+                   // printf("la stat est deja au plus haut\n");
                 }
                 else{
-                    poke->stat.niv_vit = poke->stat.niv_vit + att.boost;
-                    x = fraction( poke->stat.niv_vit);
-                    poke->stat.vitesse = poke->stat.vitesse_initial * x;
+                    poke.stat.niv_vit = poke.stat.niv_vit + att.boost;
+                    x = fraction( poke.stat.niv_vit);
+                    poke.stat.vitesse = poke.stat.vitesse_initial * x;
                 }
                 break;
             default:
                 break;
         }
-     }    
+     }
+     return poke;
 }
 
 /*-------------- Partie attaque de changement de meteo et gestion du terrain ----------------*/
 
-void gestion_tempete(terrain *T,int tour){
+terrain gestion_tempete(terrain T,int joueur,int tour){
     if(tour==5){
-        T->meteo=rien;
+        T.meteo=rien;
     }
     else{
-        if(T->pokeJ1->type!=roche && T->pokeJ1->type!=sol && T->pokeJ1->type!=acier){
-            T->pokeJ1->stat.PV = T->pokeJ1->stat.PV * 0.9375; // -1/16 de ses pv
+        if(joueur == 1){
+            if(T.J1.liste_pokemon[0].type!=roche && T.J1.liste_pokemon[0].type!=sol && T.J1.liste_pokemon[0].type!=acier){
+                T.J1.liste_pokemon[0].stat.PV = T.J1.liste_pokemon[0].stat.PV - (T.J1.liste_pokemon[0].stat.PV_max * 0.0625); // -1/16 de ses pv
+            }
         }
-        if(T->pokeJ2->type!=roche && T->pokeJ2->type!=sol && T->pokeJ2->type!=acier){
-            T->pokeJ2->stat.PV = T->pokeJ2->stat.PV * 0.9375; // -1/16 de ses pv
+        else{
+            if(T.J2.liste_pokemon[0].type!=roche && T.J2.liste_pokemon[0].type!=sol && T.J2.liste_pokemon[0].type!=acier){
+                T.J2.liste_pokemon[0].stat.PV = T.J2.liste_pokemon[0].stat.PV - (T.J2.liste_pokemon[0].stat.PV_max * 0.0625); // -1/16 de ses pv
+            }
         }
     }
+    return T;
 }
 
-void gestion_grele(terrain *T,int tour){
-    if(tour==5){
-        T->meteo=rien;
+terrain gestion_grele(terrain T,int joueur,int tour){
+    if(tour == 5){
+        T.meteo=rien;
     }
     else{
-        if(T->pokeJ1->type!=glace){
-            T->pokeJ1->stat.PV = T->pokeJ1->stat.PV * 0.9375; // -1/16 de ses pv
+        if(joueur == 1){
+            if(T.J1.liste_pokemon[0].type != glace ){
+                T.J1.liste_pokemon[0].stat.PV = T.J1.liste_pokemon[0].stat.PV - (T.J1.liste_pokemon[0].stat.PV_max * 0.0625); // -1/16 de ses pv
+            }
         }
-        if(T->pokeJ2->type!=glace){
-            T->pokeJ2->stat.PV = T->pokeJ2->stat.PV * 0.9375; // -1/16 de ses pv
+        else {
+            if(T.J2.liste_pokemon[0].type != glace){
+                T.J2.liste_pokemon[0].stat.PV = T.J2.liste_pokemon[0].stat.PV - (T.J2.liste_pokemon[0].stat.PV_max * 0.0625); // -1/16 de ses pv
+            }
         }
-    } 
-}
-
-void gestion_pluie(terrain *T,int tour){
-    if(tour==5){
-        T->meteo=rien;
     }
+    return T;
 }
 
-void gestion_soleil(terrain *T,int tour){
+terrain gestion_soleil(terrain T,int joueur,int tour){
     if(tour==5){
-        T->meteo=rien;
+        T.meteo=rien;
     }
+    return T;
 }
 
-void gestion_meteo(terrain *T, int tour){
-    switch (T->meteo){
+terrain gestion_pluie(terrain T,int joueur,int tour){
+    if(tour>=5){
+        T.meteo=rien;
+    }
+    return T;
+}
+
+terrain gestion_meteo(terrain T,int joueur, int tour){
+    switch (T.meteo){
         case tempete:
-            gestion_tempete(T,tour);
+            T = gestion_tempete(T,joueur,tour);
             break;
         case pluie:
-            gestion_pluie(T,tour);
+            T = gestion_pluie(T,joueur,tour);
             break;
         case grele:
-            gestion_grele(T,tour);
+            T= gestion_grele(T,joueur,tour);
             break;
         case soleil:
-            gestion_soleil(T,tour);
+            T = gestion_soleil(T,joueur,tour);
+            break;
         default:
             break;
-        }   
+        } 
+    return T;
 }
 
+
 /*-------------- Partie gestion de l'attaque ----------------*/
-int attaque_priorite(pokemon *poke1, pokemon *poke2){
-    return (poke1->stat.vitesse >= poke2->stat.vitesse );
-}
 
 int toucher(pokemon poke,attaques att){
     srand(time(NULL));
@@ -738,7 +795,7 @@ int toucher(pokemon poke,attaques att){
     else if(poke.etat==confusion){
         //si l'attaque a rater(le pokemon se blesse dans sa confusuin)
         if(x < ((precision * 0.33)*100)){
-            printf("il se blesse dans sa confusion\n");
+           // printf("il se blesse dans sa confusion\n");
             return 2;
         }
         //l'attaque a reussi
@@ -748,7 +805,7 @@ int toucher(pokemon poke,attaques att){
     }
     else if(poke.etat==paraliser){
         if(x < ((precision * 0.25)*100)){
-            printf("le pokemon est paralyser, il n'a pas pu attaquer\n");
+           // printf("le pokemon est paralyser, il n'a pas pu attaquer\n");
             return 0;
         }
         else{
@@ -766,116 +823,230 @@ int toucher(pokemon poke,attaques att){
     }
 }
 
-void applique_attaque(terrain *T,pokemon * poke_attaquant, pokemon * poke_defensive, attaques att, int tour){
-        int degats;
-        int touche = toucher(*poke_attaquant,att);
-        if(touche == 0){
-            printf("le pokemon a raté son attaque\n");
-        }
-        else if(touche == 1){
-            /*--------------cas d'une attaque normal----------------*/
-            if(att.application == 0){
-                degats = calcul_pv_perdu(T,*poke_attaquant,*poke_defensive,att);
-                poke_defensive->stat.PV = poke_defensive->stat.PV - degats;
+terrain applique_attaque(terrain T, int joueur ,attaques att, int tour){
+    int degats;
+    // le J1 attaque le J2
+    if(joueur == 1){
+        /*--------------cas d'une attaque normal----------------*/
+        if(att.application == 0){
+            degats = calcul_pv_perdu(T,T.J1.liste_pokemon[0],T.J2.liste_pokemon[0],att);
+            T.J2.liste_pokemon[0].stat.PV = T.J2.liste_pokemon[0].stat.PV - degats;
+            if(T.J2.liste_pokemon[0].stat.PV < 0){
+                T.J2.liste_pokemon[0].stat.PV =0;
             }
-            /*--------------cas d'une attaque de changement de statut ----------------*/
-            else if(att.application == 1){
-                if(poke_defensive->etat == neutre){
-                    switch (att.effet) {
-                        case paraliser :
-                            applique_paralisie(poke_defensive);
-                            break;
-                        case empoisoner:
-                            poke_defensive->etat=empoisoner;
-                            break;
-                        case endormie:
-                            poke_defensive->etat = endormie;
-                            poke_defensive->tour_etat=tour;
-                            break;
-                        case brulure:
-                            poke_defensive->etat = brulure;
-                            break;
-                        case confusion:
-                            poke_defensive->etat = confusion;
-                            poke_defensive->tour_etat=tour;
-                            break;
-                        case geler:
-                            poke_defensive->etat = geler;
-                            break;
-                        default:
-                            break;
-                    }
+        }
+        /*--------------cas d'une attaque de changement de statut ----------------*/
+        else if(att.application == 1){
+            if(T.J2.liste_pokemon[0].etat == neutre){
+                switch (att.effet) {
+                    case paraliser :
+                        T.J2.liste_pokemon[0] = applique_paralisie(T.J2.liste_pokemon[0]);
+                        break;
+                    case empoisoner:
+                        T.J2.liste_pokemon[0].etat=empoisoner;
+                        T.J2.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case endormie:
+                        T.J2.liste_pokemon[0].etat = endormie;
+                        T.J2.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case brulure:
+                        T.J2.liste_pokemon[0].etat = brulure;
+                        T.J2.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case confusion:
+                        T.J2.liste_pokemon[0].etat = confusion;
+                        T.J2.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case geler:
+                        T.J2.liste_pokemon[0].etat = geler;
+                        T.J2.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    default:
+                        break;
                 }
-                else{
-                    printf("L'attaque a echoué\n");
+            }
+            else{
+                // printf("L'attaque a echoué\n");
+            }
+        }
+        else if( att.application == 2){
+            T.J1.liste_pokemon[0] = applique_boost(T.J1.liste_pokemon[0], att);
+        }
+        else if( att.application == 3){
+            T.J2.liste_pokemon[0] = applique_nerf(T.J2.liste_pokemon[0], att);
+        }
+        else if(att.application == 4){
+            switch (att.Meteo) {
+                    case pluie :
+                        if(T.meteo == pluie){
+                           // printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=pluie;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case soleil:
+                        if(T.meteo == soleil){
+                            //printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=soleil;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case tempete:
+                        if(T.meteo == tempete){
+                           // printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=tempete;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case grele:
+                        if(T.meteo == grele){
+                           // printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=grele;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+        }
+    }
+    else if(joueur == 2){
+         /*--------------cas d'une attaque normal----------------*/
+        if(att.application == 0){
+            degats = calcul_pv_perdu(T,T.J2.liste_pokemon[0],T.J1.liste_pokemon[0],att);
+            T.J1.liste_pokemon[0].stat.PV = T.J1.liste_pokemon[0].stat.PV - degats;
+            if(T.J1.liste_pokemon[0].stat.PV < 0){
+                T.J1.liste_pokemon[0].stat.PV = 0;
+            }
+        }
+        /*--------------cas d'une attaque de changement de statut ----------------*/
+        else if(att.application == 1){
+            if(T.J1.liste_pokemon[0].etat == neutre){
+                switch (att.effet) {
+                    case paraliser :
+                        T.J1.liste_pokemon[0] = applique_paralisie(T.J1.liste_pokemon[0]);
+                        break;
+                    case empoisoner:
+                        T.J1.liste_pokemon[0].etat=empoisoner;
+                        T.J1.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case endormie:
+                        T.J1.liste_pokemon[0].etat = endormie;
+                        T.J1.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case brulure:
+                        T.J1.liste_pokemon[0].etat = brulure;
+                        T.J1.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case confusion:
+                        T.J1.liste_pokemon[0].etat = confusion;
+                        T.J1.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    case geler:
+                        T.J1.liste_pokemon[0].etat = geler;
+                        T.J1.liste_pokemon[0].tour_etat=tour;
+                        break;
+                    default:
+                        break;
                 }
             }
-            /*--------------cas d'une attaque qui boost une ou plusieurs stats---------*/
-            else if(att.application == 2){
-                applique_boost(poke_attaquant,att);
+            else{
+               // printf("L'attaque a echoué\n");
             }
-            /*--------------cas d'une attaque qui nerf une ou plusieurs stats---------*/
-            else if(att.application == 3){
-                applique_nerf(poke_defensive,att);
-            }
-            /*--------------cas d'une attaque qui change la meteo---------*/
-            else if(att.application == 4){
-                switch (att.Meteo) {
-                        case pluie :
-                            T->meteo=pluie;
-                            T->tour_meteo=tour;
-                            break;
-                        case soleil:
-                            T->meteo=soleil;
-                            T->tour_meteo=tour;
-                            break;
-                        case tempete:
-                            T->meteo=tempete;
-                            T->tour_meteo=tour;
-                            break;
-                        case grele:
-                            T->meteo=grele;
-                            T->tour_meteo=tour;
-                            break;
-                        default:
-                            break;
-                    }
-            }
-            
         }
-        else if(touche == 2){
-            applique_confusion(T,poke_attaquant,att);
+        else if( att.application == 2){
+            T.J2.liste_pokemon[0] = applique_boost(T.J2.liste_pokemon[0], att);
         }
+        else if( att.application == 3){
+            T.J1.liste_pokemon[0] = applique_nerf(T.J1.liste_pokemon[0], att);
+        }
+        else if(att.application == 4){
+            switch (att.Meteo) {
+                    case pluie :
+                        if(T.meteo == pluie){
+                           // printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=pluie;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case soleil:
+                        if(T.meteo == soleil){
+                            //printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=soleil;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case tempete:
+                        if(T.meteo == tempete){
+                            //printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=tempete;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    case grele:
+                        if(T.meteo == grele){
+                            //printf("L'attaque a echoué\n");
+                        }
+                        else{
+                            T.meteo=grele;
+                            T.tour_meteo=tour;
+                        }
+                        break;
+                    default:
+                        break;
+            }
+        }
+    }
+    return T;
 }
 
 /*-------------- Partie gestion des morts ----------------*/
-int mort(pokemon *poke){
-    return (poke->stat.PV <= 0);
+
+int mort(pokemon poke){
+    return (poke.stat.PV <= 0);
 }
 
-void enlever_pokemon_equipe(equipe * E, pokemon *poke){
+terrain enlever_pokemon_equipe(terrain T, int joueur , pokemon poke){
+
     int i=0;
-    pokemon *p = E->liste_pokemon[i];
-    while( i < E->nb_vivant &&  p->nom != poke->nom ){
-        i++;
-        p=E->liste_pokemon[i];
+    pokemon p;
+    if (joueur == 1){
+        p = T.J1.liste_pokemon[i];
+        while( i < T.J1.nb_vivant &&  p.nom != poke.nom ){
+            i++;
+            p=T.J1.liste_pokemon[i];
+        }
+        //on place le dernier pokemon de la team a la place du pokemon mort
+        T.J1.liste_pokemon[i]=T.J1.liste_pokemon[T.J1.nb_vivant-1];
+        //on reduit la taille de la team
+        T.J1.nb_vivant--;
     }
-    //on place le dernier pokemon de la team a la place du pokemon mort
-    E->liste_pokemon[i]=E->liste_pokemon[E->nb_vivant-1];
-    //on reduit la taille de la team
-    E->nb_vivant--;
+    else if (joueur == 2){
+        p = T.J2.liste_pokemon[i];
+        while( i < T.J2.nb_vivant &&  p.nom != poke.nom ){
+            i++;
+            p=T.J2.liste_pokemon[i];
+        }
+        //on place le dernier pokemon de la team a la place du pokemon mort
+        T.J2.liste_pokemon[i]=T.J2.liste_pokemon[T.J2.nb_vivant-1];
+        //on reduit la taille de la team
+        T.J2.nb_vivant--;
+    }
+    return T;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 

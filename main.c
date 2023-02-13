@@ -1,170 +1,209 @@
 #include "ia.h"
 
 
-// int main(){
-//     pile p=create_empty_stack();
-//     creer_pokedex(p);
-//     //afficher_pokedex(p);
-//     equipe *J1,*J2;
-//     attaques att1, att2;
-//     int tour=0;
-//     J1 = init_equipe (p);
-//     J2 = init_equipe (p);
-//     terrain *T = init_terrain(J1,J2);
-//     Item *node=nodeAlloc();
-//     node->T=T;
-//     list_t *l=malloc(sizeof(list_t));
-//     initList(l);
-//     printf("nb d'el de la liste : %d\n",listCount(l));
-//     addFirst(l,node);
-//     printList(*l);
-//     popBest(l);
-//     printList(*l);
-
-    
-//    J1 = switch_pokemon(J1, J1.liste_pokemon[2]);
-//     while(!partie_fini(J1, J2)){
-//         afficher_terrain(T,J1,J2);
-//         printf("J1 : ");
-//         att1 = choix_att_joueur(J1.liste_pokemon[0]);
-//         att2 = choix_att_joueur(J2.liste_pokemon[0]);
-//         J2.liste_pokemon[0] = applique_attaque(J1.liste_pokemon[0],J2.liste_pokemon[0],att1,tour);
-//         J1.liste_pokemon[0] = applique_attaque(J2.liste_pokemon[0],J1.liste_pokemon[0],att2,tour);
-//         J2.liste_pokemon[0]=gestion_statut(J2.liste_pokemon[0], tour - J2.liste_pokemon[0].tour_etat);
-//         tour++;
-//     }
-//    // printf("degats : %d\n",calcul_pv_perdu(J1.liste_pokemon[0],J2.liste_pokemon[0], J1.liste_pokemon[0].attaque[0]));
-//     // printf("%d \n", toucher(J1.liste_pokemon[0].attaque[0]));
-//     // J1 = switch_pokemon(J1,J1.liste_pokemon[2]);
-//     // afficher_terrain(T,J1,J2); 
-//      return 0;
-// } 
-
-
-
+//J1 sera l'ia
 int main(){
 
     int choix1,choix2;
-    attaques att1;
-    attaques att2;
-    pokemon *poke1;
-    pokemon *poke2;
-    Item *decision_ia;
+    attaques att1,att2;
+    pokemon poke1,poke2;
     int tour=0;
-
+    int touch;
 
     pile p=create_empty_stack();
     creer_pokedex(p);
-    equipe *J1 = init_equipe (p);
-    equipe *J2 = init_equipe (p);
-    terrain *T = init_terrain(J1,J2);
+    equipe J1,J2;
+    J1 = init_equipe (p);
+    J2 = init_equipe (p);
+    terrain T = init_terrain(J1,J2);
+    int joueur = 0;
+    
 
-    while(!partie_fini(J1, J2)){
+    initList(&openlist);
+    // initList(&closedlist);
+    
+    
+    Item *node = nodeAlloc();
+    Item *res_ia = nodeAlloc();
+    //Item *choix_ia = nodeAlloc();
+
+    //initialisation ia
+    // initNode( node,T,tour);
+    // addFirst(&openlist,node);
+    // res_ia = bfs( tour);
+    // int tour_affiler=0;
+
+    while(!partie_fini(T)){
+        
 //-------------------------------affichage du terrain ----------------------//
         afficher_terrain(T);
 
-//--------------- choix des action -------------------//
-    //le J1 joue
-        printf("J1 : ");
-        choix1 = choix_action_joueur();
-        if(choix1 == 0){
+        if(joueur == 0){
+    // -------------------- tour de J1 ------------------------------ //
             printf("J1 : ");
-            att1= choix_att_joueur(T->pokeJ1);
-        }
-        else{
-            printf("J1 : ");
-            poke1=choix_switch_joueur(J1);
-        }
-    //le J2 joue a son tour
-        printf("J2 : ");
-        decision_ia = ia(T,tour);
-        choix2 = decision_ia->choix;
-        if(choix2==0){
-            att2=decision_ia->AT;
-        }
-        else{
-            poke2=decision_ia->poke;
-        }
-
-//-------------Deroulement du tour de jeu---------------//
-
-    //si les deux joeurs ont attaqué
-        if(choix1 == 0 && choix2 == 0){
-            // si le premier pokemon est plus rapide que le deuxieme
-            if(attaque_priorite(T->pokeJ1,T->pokeJ2)){
-                applique_attaque(T,T->pokeJ1,T->pokeJ2,att1,tour);
-                if(!mort(T->pokeJ2)){
-                    applique_attaque(T,T->pokeJ2,T->pokeJ1,att2,tour);
-                }
+            choix1 = choix_action_joueur();
+            if(choix1 == 0){
+                printf("J1: ");
+                att1= choix_att_joueur(T.J1.liste_pokemon[0]);
             }
-            //si le J2 joue en premier
             else{
-                applique_attaque(T,T->pokeJ2,T->pokeJ1,att2,tour);
-                if(!mort(T->pokeJ1)){
-                    applique_attaque(T,T->pokeJ1,T->pokeJ2,att1,tour);
+                printf("J1 : ");
+                poke1=choix_switch_joueur(T.J1);
+            }
+
+            if( choix1 == 0 ){
+                touch = toucher(T.J1.liste_pokemon[0], att1);
+                if(touch==0){
+                    printf("le pokemon de J1 a raté son attaque\n");
+                }
+                //l'attaque a reussi
+                else if(touch==1){
+                    T = applique_attaque(T,1,att1,tour);
+                } 
+                //le pokemon se blesse dans sa confusion
+                else if(touch==2){
+                    T.J1.liste_pokemon[0] = applique_confusion(T,T.J1.liste_pokemon[0],att1);
                 }
             }
+            else{
+                T = switch_pokemon(T,1,poke1);
+            }
+        //----------------------- Gestion des statut ---------------------------//
+
+            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+        //----------------------- Gestion de la meteo ---------------------------//
+            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+        //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                printf("Le pokemon de J2 est mort ! \n");
+                poke2 = best_switch_ia(T);
+                T = switch_pokemon(T, 2, poke2);
+            }
+            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                T.J2.nb_vivant=0;
+            }
+            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                //on retire le pokemon mort de l'equipe
+                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                //on en choisie un nouveau
+                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                printf("J1 : ");
+                poke1 = choix_switch_joueur(T.J1);
+                T = switch_pokemon(T, 1, poke1);
+            }
+            //dans ce cas c'est le dernier pokemon qui viens de mourir
+            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                //on met le nb de vivant a 0 pour que la partie se termine
+                T.J1.nb_vivant=0;
+            }
+            
         }
-    // si le J1 attaque et le J2 switch
-        else if( choix1 == 0 && choix2 == 1){
-            switch_pokemon(T,poke2,2);
-            applique_attaque(T,T->pokeJ1,T->pokeJ2,att1, tour);
-        }
-    // si le J2 attaque et le J1 switch
-        else if( choix1 == 1 && choix2 == 0){
-            switch_pokemon(T,poke1,1);
-            applique_attaque(T,T->pokeJ2,T->pokeJ1,att2, tour);
-        }
-    // si les deux joueurs switch
+    // -------------------- tour de J2 ------------------------------ //
         else{
-            switch_pokemon(T,poke1,1);
-            switch_pokemon(T,poke2,2);
+            printf("J2 :");
+            
+            initNode( node,T);
+            addFirst(&openlist,node);
+            res_ia = astar( tour);
+                // choix_ia = back_track(res_ia,tour_affiler);
+                // if( choix_ia->T.J1.liste_pokemon[0].nom != T.J1.liste_pokemon[0].nom  || choix_ia->T.meteo != T.meteo || choix_ia->parent->T.J1.liste_pokemon[0].stat.PV == T.J1.liste_pokemon[0].stat.PV){
+                //     res_ia = bfs( tour);
+                //     choix_ia = back_track(res_ia,tour_affiler);
+                //     tour_affiler=0;
+                // }
+                // }
+            // initNode(node, T);
+            // res_ia = solution_secours(node, tour);
+             choix2 = res_ia->choix;
+            if(choix2 == 0){
+                att2 = res_ia->AT;
+                printf("l'attaque choisi par l'ia : ");
+                afficher_attaque(att2);
+                printf("\n");
+            }
+            else{
+                printf("J2 : ");
+                poke2=res_ia->poke;
+                printf("le pokemon choisi par l'ia : %s", poke2.nom);
+
+            }
+            // res = ia(T,tour);
+            // choix2 = res->choix;
+            // if(choix2 == 0){
+            //     att2 = res->AT;
+            // }
+            // else if (choix2 ==1) {
+            //     poke2 = res->poke;
+            // }
+        
+            if(choix2 == 0){
+                touch = toucher(T.J2.liste_pokemon[0], att2);
+                if(touch==0){
+                    printf("le pokemon de J2 a raté son attaque\n");
+                }
+                //l'attaque a reussi
+                else if(touch==1){
+                    T = applique_attaque(T,2,att2,tour);
+                }
+                //le pokemon se blesse dans sa confusion
+                else if(touch==2){
+                    T.J2.liste_pokemon[0] = applique_confusion(T,T.J2.liste_pokemon[0],att2);
+                }
+            }
+            else {
+                T = switch_pokemon(T,2,poke2);
+            }
+        //----------------------- Gestion des statut ---------------------------//
+
+            T.J2.liste_pokemon[0]=gestion_statut(T.J2.liste_pokemon[0], tour - T.J2.liste_pokemon[0].tour_etat);
+
+        //----------------------- Gestion de la meteo ---------------------------//
+            T = gestion_meteo(T,2, tour - T.tour_meteo);
+            
+    //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                //on retire le pokemon mort de l'equipe
+                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                //on en choisie un nouveau
+                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                printf("J1 : ");
+                poke1 = choix_switch_joueur(T.J1);
+                T = switch_pokemon(T, 1, poke1);
+            }
+            //dans ce cas c'est le dernier pokemon qui viens de mourir
+            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                //on met le nb de vivant a 0 pour que la partie se termine
+                T.J1.nb_vivant=0;
+            }
+            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                printf("Le pokemon de J2 est mort ! \n");
+                poke2 = best_switch_ia(T);
+                printf("l'ia switch sur : %s\n",poke2.nom);
+                T = switch_pokemon(T, 2, poke2);
+            }
+            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                T.J2.nb_vivant=0;
+            }
+            
+            tour++;
+            cleanupList(&openlist);
         }
-
-
-//----------------------- Gestion des statut ---------------------------//
-    gestion_statut(T->pokeJ1, tour - T->pokeJ1->tour_etat);
-    gestion_statut(T->pokeJ2, tour - T->pokeJ2->tour_etat);
-
-//----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
-
-        if(mort(T->pokeJ1) && J1->nb_vivant>1){
-            //on retire le pokemon mort de l'equipe
-            enlever_pokemon_equipe(J1,T->pokeJ1);
-            //on en choisie un nouveau
-            printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            printf("J1 : ");
-            poke1 = choix_switch_joueur(J1);
-            switch_pokemon(T,poke1,1);
-        }
-        //dans ce cas c'est le dernier pokemon qui viens de mourir
-        else if (mort(T->pokeJ1) && J1->nb_vivant <=1 ){
-            //on met le nb de vivant a 0 pour que la partie se termine
-            J1->nb_vivant=0;
-        }
-
-
-        if(mort(T->pokeJ2) && J2->nb_vivant>1){
-            enlever_pokemon_equipe(J2,T->pokeJ2);
-            printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
-            printf("J2 : ");
-            poke2 = choix_switch_ia_random(J2);
-            switch_pokemon(T,poke2,2);
-        }
-        else if (mort(T->pokeJ2) && J2->nb_vivant <=1 ){
-        J2->nb_vivant=0;
-        }
-//----------------------- Gestion de la meteo ---------------------------//
-    gestion_meteo(T,tour - T->tour_meteo);
-    
-    tour++;
+        joueur = (joueur + 1) %2 ; //changement de joueur
     }
 
-    printf("La partie est fini:\n");
-    if(J1->nb_vivant == 0 ){
+    printf("La partie est fini\n");
+    if(T.J1.nb_vivant == 0 ){
         printf("Le gagnant est J2 !\n");
     }
     else {
         printf("Le gagnant est J1 ! \n");
     }
+
 }
+
+

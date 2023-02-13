@@ -1,7 +1,7 @@
-#include "combat.h"
+#include "arbre.h"
 
 // //renvoie true(1) si une equipe n'a plus de pokemon
-int partie_fini (equipe *J1, equipe *J2);
+int partie_fini (terrain T);
 
 // //demande au joueur si il veux attaquer ou switcher
 // //renvoie 0 pour attaquer
@@ -10,8 +10,7 @@ int choix_action_joueur();
 
 //affiche les attaque du pokemon sur le terrain
 //puis renvoie l'attaque choisie par le joueur
-attaques choix_att_joueur(pokemon *poke);
+attaques choix_att_joueur(pokemon poke);
 
 // //renvoie le pokemon choisie poar le joueur
-pokemon *choix_switch_joueur(equipe *J1);
-
+pokemon choix_switch_joueur(equipe J1);
