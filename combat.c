@@ -4,8 +4,8 @@
 
 equipe init_equipe(pile p){
     equipe team;
-    team.nb_vivant=6;
-    for (int j=0; j<6;j++){
+    team.nb_vivant=3;
+    for (int j=0; j<3;j++){
         team.liste_pokemon[j]=pop(p);
     }
     return team;
