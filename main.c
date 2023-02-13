@@ -13,8 +13,8 @@ int main(){
     pile p=create_empty_stack();
     creer_pokedex(p);
     equipe J1,J2;
-    J1 = init_equipe (p);
-    J2 = init_equipe (p);
+    J1 = choisir_equipe (p);
+    J2 = init_equipe_alea (p);
     terrain T = init_terrain(J1,J2);
     int joueur = 0;
     
