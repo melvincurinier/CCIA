@@ -38,6 +38,7 @@ pokemon_texture initPokemon(SDL_Renderer * _Renderer,SDL_Window * _Window,char *
     }
     pokemonTexture->pokemon_width_face = _Width;
     pokemonTexture->pokemon_height_face = _Height;
+    pokemonTexture->select=0;
     return pokemonTexture;
 } 
 
@@ -56,26 +57,27 @@ Background initBackground(SDL_Renderer * _Renderer,SDL_Window * _Window,char * _
 //------------------ Creation de tableau stockant nos background ----------------//
 Background * initBackgroundTable(){
     //char * Texture[4]={"sprites/sprite_background_menu.png","sprites/sprite_button_play.png","sprites/Choose_player_menu.png",""};
-    Background * backgroundTable = malloc(4*sizeof(Background));   
-    for(int i=0;i<3;i++){
+    Background * backgroundTable = malloc(15*sizeof(Background));   
+    for(int i=0;i<15;i++){
         backgroundTable[i]=NULL;
     }
     return backgroundTable; 
 }
 //---------------- Stockage des background dans des tableau ----------------------//
-Background * placeBackground(Background _Background,Background * _TableBackground){
-    int i=0;
-    int placement = 0;
-    while(i<12 && placement == 0){
-        if(_TableBackground[i]==NULL){
-            _TableBackground[i]=_Background;
-            placement=1;
-        }
-        i=i+1;
+Background * placeBackground(Background _Background,Background * _TableBackground,int pos){
+    if(_TableBackground[pos]==NULL){
+        _TableBackground[pos]=_Background;  
     }
     return _TableBackground;
 }
 
+//---------------- Definition des paramètre du rectangle -------------------------//
+void SDL_RectDef(SDL_Rect * _Rect,int _Width,int _Height,int _PosX,int _PosY){
+    _Rect->w = _Width;
+    _Rect->h = _Height;
+    _Rect->x = _PosX;
+    _Rect->y = _PosY;
+}
 
 
 //--------- Modification du rendu de la page ----------//

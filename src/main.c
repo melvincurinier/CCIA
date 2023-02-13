@@ -173,6 +173,7 @@ int main(int arg,char **argv){
     SDL_Rect pokemonPosition;
     SDL_Rect _background;
     int index = MAIN_MENU;
+    int Character_select=0;
 
     //-------------- Initialisation des tableaux de texture -------------//
     //SDL_Texture ** Texture_Background;
@@ -210,13 +211,39 @@ int main(int arg,char **argv){
 
     printf("bjr");
     //--------------- Initialisation des textures des Menu ----------------------//
+    Background chooseMenuPalyer = initBackground(renderer,window,"sprites/Choose_player_menu.png",800,600);
+    Background CharizardButtonChoose = initBackground(renderer,window,"sprites/Charizard_button.png",186,69);
+    Background VanusaurButtonChoose = initBackground(renderer,window,"sprites/Vanusaur_button.png",186,69);
+    Background TortoiseButtonChoose = initBackground(renderer,window,"sprites/Tortoise_button.png",186,69);
+    Background AriadosButtonChoose = initBackground(renderer,window,"sprites/Ariados_button.png",186,69);
+    Background DragoniteButtonChoose = initBackground(renderer,window,"sprites/Dragonite_button.png",186,69);
+    Background OnixButtonChoose = initBackground(renderer,window,"sprites/Onix_Button.png",186,69);
+    Background HarbokButtonChoose = initBackground(renderer,window,"sprites/Harbok_Button.png",186,69);
+    Background RaichuButtonChoose = initBackground(renderer,window,"sprites/Raichu_Button.png",186,69);
+    Background AlakazamButtonChoose = initBackground(renderer,window,"sprites/Alakazam_button.png",186,69);
+    Background PidgeotButtonChoose = initBackground(renderer,window,"sprites/Pidgeot_button.png",186,69);
+    Background SnorlakButtonChoose = initBackground(renderer,window,"sprites/Snorlak_button.png",186,69);
+    Background MachampButtonChoose = initBackground(renderer,window,"sprites/Machamp_button.png",186,69);
+    //--------------- Initialisation des textures des Menu ----------------------//
     Background * Texture_Background = initBackgroundTable();
     Background menuPrincipale = initBackground(renderer,window,"sprites/sprite_background_menu.png",800,600);
-    Background buttonMenuPricp = initBackground(renderer,window,"sprites/sprite_button_play.png",254,56);
-    Background chooseMenuPalyer = initBackground(renderer,window,"sprites/Choose_player_menu.png",800,600);
-    Texture_Background = placeBackground(menuPrincipale,Texture_Background);
-    Texture_Background = placeBackground(buttonMenuPricp,Texture_Background);
-    Texture_Background = placeBackground(chooseMenuPalyer,Texture_Background);
+    Background buttonMenuPricp = initBackground(renderer,window,"sprites/sprite_button_play.png",254,56); 
+    //----------------------------------------------------------------//
+    Texture_Background = placeBackground(menuPrincipale,Texture_Background,0);
+    Texture_Background = placeBackground(buttonMenuPricp,Texture_Background,1);
+    Texture_Background = placeBackground(chooseMenuPalyer,Texture_Background,2);
+    Texture_Background = placeBackground(CharizardButtonChoose,Texture_Background,3);
+    Texture_Background = placeBackground(VanusaurButtonChoose,Texture_Background,4);
+    Texture_Background = placeBackground(TortoiseButtonChoose,Texture_Background,5);
+    Texture_Background = placeBackground(AriadosButtonChoose,Texture_Background,6);
+    Texture_Background = placeBackground(DragoniteButtonChoose,Texture_Background,7);
+    Texture_Background = placeBackground(OnixButtonChoose,Texture_Background,8);
+    Texture_Background = placeBackground(HarbokButtonChoose,Texture_Background,9);
+    Texture_Background = placeBackground(RaichuButtonChoose,Texture_Background,10);
+    Texture_Background = placeBackground(AlakazamButtonChoose,Texture_Background,11);
+    Texture_Background = placeBackground(PidgeotButtonChoose,Texture_Background,12);
+    Texture_Background = placeBackground(SnorlakButtonChoose,Texture_Background,13);
+    Texture_Background = placeBackground(MachampButtonChoose,Texture_Background,14);
     //------------ Creation de la boucle du programme -------//
     //
     //------------ Gestion de fps --------------//
@@ -234,16 +261,10 @@ int main(int arg,char **argv){
     //-----------------------------------------//
     SDL_bool program_lauched = SDL_TRUE;
     //------------------ Apparition du Menu Principal -------------//
-    _background.h=Texture_Background[0]->backgroundHeight;
-    _background.w=Texture_Background[0]->backgroundWidth;
-    _background.x=(WINDOW_WIDTH - Texture_Background[0]->backgroundWidth)/2;
-    _background.y=(WINDOW_HEIGTH - Texture_Background[0]->backgroundHeight)/2;
+    SDL_RectDef(&_background,Texture_Background[0]->backgroundWidth,Texture_Background[0]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[0]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[0]->backgroundHeight)/2);
     SDL_RenderCopy(renderer,Texture_Background[0]->background,NULL,&_background);
     //------------------ Apparition du boutton -------------//
-    _background.h=Texture_Background[1]->backgroundHeight;
-    _background.w=Texture_Background[1]->backgroundWidth;
-    _background.x=(WINDOW_WIDTH - Texture_Background[1]->backgroundWidth)/2;
-    _background.y=((WINDOW_HEIGTH - Texture_Background[1]->backgroundHeight)/5)*4;
+    SDL_RectDef(&_background,Texture_Background[1]->backgroundWidth,Texture_Background[1]->backgroundHeight,273,500);
     SDL_RenderCopy(renderer,Texture_Background[1]->background,NULL,&_background);
     //-------------------------------------------------------//
     SDL_RenderPresent(renderer);/*Actualise le rendu*/
@@ -264,230 +285,686 @@ int main(int arg,char **argv){
                         //button size 184*69
                         //cadre size 249*150
                         //----------------------------- Button Charizard ----------------//
-                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=200 && event.motion.y<=269){
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=200 && event.motion.y<=269 && Charizard->select == 0){
                             printf("la souri est %dx|%dy \n",event.button.x,event.button.y);
                             //------ Affichage de pokemon -----------//
-                            pokemonPosition.w=Charizard->pokemon_width_face*2;
-                            pokemonPosition.h=Charizard->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Charizard->pokemon_width_face);          //154.5;
-                            pokemonPosition.y=34+(150-Charizard->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Charizard->pokemon_width_face*2,Charizard->pokemon_height_face*2,90+(249/2 - Charizard->pokemon_width_face),34+(150-Charizard->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Charizard->texture_face,NULL,&pokemonPosition);
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
                         //-------------------------- Button Venuzaur --------------------------//
-                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=200 && event.motion.y<=269){
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=200 && event.motion.y<=269 && Vanusaur->select == 0){
                             printf("la souri est %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
                             //------ Affichage de pokemon -----------//
-                           pokemonPosition.w=Vanusaur->pokemon_width_face*2;
-                            pokemonPosition.h=Vanusaur->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Vanusaur->pokemon_width_face);
-                            pokemonPosition.y=34+(150 - Vanusaur->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Vanusaur->pokemon_width_face*2,Vanusaur->pokemon_height_face*2,90+(249/2 - Vanusaur->pokemon_width_face),34+(150 - Vanusaur->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Vanusaur->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Totoise ---------------------//
-                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=200 && event.motion.y<=269){
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=200 && event.motion.y<=269 && Tortoise->select == 0){
                             printf("la souri est %dx|%dy Button Tortoise \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Tortoise->pokemon_width_face*2;
-                            pokemonPosition.h=Tortoise->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Tortoise->pokemon_width_face);
-                            pokemonPosition.y=34+(145 - Tortoise->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Tortoise->pokemon_width_face*2,Tortoise->pokemon_height_face*2,90+(249/2 - Tortoise->pokemon_width_face),34+(145 - Tortoise->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Tortoise->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Ariados ---------------------//
-                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=277 && event.motion.y<=346){
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=277 && event.motion.y<=346 && Ariados->select == 0){
                             printf("la souri est %dx|%dy Button Ariados \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Ariados->pokemon_width_face*2;
-                            pokemonPosition.h=Ariados->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Ariados->pokemon_width_face);
-                            pokemonPosition.y=34+(150 - Ariados->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Ariados->pokemon_width_face*2,Ariados->pokemon_height_face*2,90+(249/2 - Ariados->pokemon_width_face),34+(150 - Ariados->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Ariados->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Dragonite --------------------//
-                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=277 && event.motion.y<=346){
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=277 && event.motion.y<=346 && Dragonite->select==0){
                             printf("la souri est %dx|%dy Button Dragonite \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Dragonite->pokemon_width_face*2;
-                            pokemonPosition.h=Dragonite->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Dragonite->pokemon_width_face);
-                            pokemonPosition.y=34+(145 - Dragonite->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Dragonite->pokemon_width_face*2,Dragonite->pokemon_height_face*2,90+(249/2 - Dragonite->pokemon_width_face),34+(145 - Dragonite->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Dragonite->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Onix ---------------------//
-                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=277 && event.motion.y<=346){
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=277 && event.motion.y<=346 && Onix->select==0){
                             printf("la souri est %dx|%dy Button Onix \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Onix->pokemon_width_face*2;
-                            pokemonPosition.h=Onix->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Onix->pokemon_width_face);
-                            pokemonPosition.y=34+(145 - Onix->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Onix->pokemon_width_face*2,Onix->pokemon_height_face*2,90+(249/2 - Onix->pokemon_width_face),34+(145 - Onix->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Onix->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Harbok -----------------------//
-                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=354 && event.motion.y<=423){
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=354 && event.motion.y<=423 && Harbok->select==0){
                             printf("la souri est %dx|%dy Button harbok \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Harbok->pokemon_width_face*2;
-                            pokemonPosition.h=Harbok->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Harbok->pokemon_width_face);
-                            pokemonPosition.y=34+(145 - Harbok->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Harbok->pokemon_width_face*2,Harbok->pokemon_height_face*2,90+(249/2 - Harbok->pokemon_width_face),34+(145 - Harbok->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Harbok->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Raichu -----------------------//
-                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=354 && event.motion.y<=423){
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=354 && event.motion.y<=423 && Raichu->select==0){
                             printf("la souri est %dx|%dy Button Raichu \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Raichu->pokemon_width_face*2;
-                            pokemonPosition.h=Raichu->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Raichu->pokemon_width_face);
-                            pokemonPosition.y=34+(150 - Raichu->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Raichu->pokemon_width_face*2,Raichu->pokemon_height_face*2,90+(249/2 - Raichu->pokemon_width_face),34+(150 - Raichu->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Raichu->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Alakazam ----------------------//
-                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=354 && event.motion.y<=423){
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=354 && event.motion.y<=423 && Alakazam->select==0){
                             printf("la souri est %dx|%dy Button Alakazam \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Alakazam->pokemon_width_face*2;
-                            pokemonPosition.h=Alakazam->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Alakazam->pokemon_width_face);
-                            pokemonPosition.y=34+(145 - Alakazam->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Alakazam->pokemon_width_face*2,Alakazam->pokemon_height_face*2,90+(249/2 - Alakazam->pokemon_width_face),34+(145 - Alakazam->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Alakazam->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Pidgeot ----------------------//
-                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=431 && event.motion.y<=500){
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=431 && event.motion.y<=500 && Pidgeot->select==0){
                             printf("la souri est %dx|%dy Button Pidgeot \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Pidgeot->pokemon_width_face*2;
-                            pokemonPosition.h=Pidgeot->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Pidgeot->pokemon_width_face);
-                            pokemonPosition.y=34+(150 - Pidgeot->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Pidgeot->pokemon_width_face*2,Pidgeot->pokemon_height_face*2,90+(249/2 - Pidgeot->pokemon_width_face),34+(150 - Pidgeot->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Pidgeot->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Snorlak ----------------------//
-                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=431 && event.motion.y<=500){
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=431 && event.motion.y<=500 && Snorlak->select==0){
                             printf("la souri est %dx|%dy Button Snorlak \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Snorlak->pokemon_width_face*2;
-                            pokemonPosition.h=Snorlak->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Snorlak->pokemon_width_face);
-                            pokemonPosition.y=34+(150 - Snorlak->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Snorlak->pokemon_width_face*2,Snorlak->pokemon_height_face*2,90+(249/2 - Snorlak->pokemon_width_face),34+(150 - Snorlak->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Snorlak->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
 
                         //-------------------------- Button Machamp ---------------------//
-                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=431 && event.motion.y<=500){
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=431 && event.motion.y<=500 && Machamp->select == 0){
                             printf("la souri est %dx|%dy Button Machamp \n",event.button.x,event.button.y);
-                            pokemonPosition.w=Machamp->pokemon_width_face*2;
-                            pokemonPosition.h=Machamp->pokemon_height_face*2;
-                            pokemonPosition.x=90+(249/2 - Machamp->pokemon_width_face);
-                            pokemonPosition.y=34+(144 - Machamp->pokemon_height_face*2);
+                            SDL_RectDef(&pokemonPosition,Machamp->pokemon_width_face*2,Machamp->pokemon_height_face*2,90+(249/2 - Machamp->pokemon_width_face),34+(144 - Machamp->pokemon_height_face*2));
                             SDL_RenderClear(renderer);
                             limit_fps(frame_limit);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             SDL_RenderCopy(renderer,Machamp->texture_face,NULL,&pokemonPosition);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
                         }
@@ -496,20 +973,728 @@ int main(int arg,char **argv){
 
                 case SDL_MOUSEBUTTONDOWN:
                     if(index==MAIN_MENU){
-                        if(event.button.x >=273 && event.button.x<=529 && event.button.y>=435.5 && event.button.y<=491.5){
+                        if(event.button.x >=273 && event.button.x<=529 && event.button.y>=500 && event.button.y<=556){
                             printf("CLick sur le boutton %dx|%dy \n",event.button.x,event.button.y);
                             /*Verification de la bonne creation du rendu*/
-                            index=CHOOSE_PLAYER_MENU;
                             limit_fps(frame_limit);
                             SDL_RenderClear(renderer);
-                            _background.h=Texture_Background[2]->backgroundHeight;
-                            _background.w=Texture_Background[2]->backgroundWidth;
-                            _background.x=Texture_Background[2]->posX;
-                            _background.y=Texture_Background[2]->posY;
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
                             SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            index=CHOOSE_PLAYER_MENU;
                         }
+                    }
+                    if(index == CHOOSE_PLAYER_MENU){
+                        if(Character_select == 3 && event.button.x >= 320 && event.button.x <=475 && event.button.y>=526 && event.button.y <= 579){
+                             printf("CLick sur le boutton play %dx|%dy \n",event.button.x,event.button.y);
+                            /*Verification de la bonne creation du rendu*/
+                            limit_fps(frame_limit);
+                            SDL_RenderClear(renderer);
+                            SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            index=GAMEPLAY;
+                        }
+                        //----------------------------- Button Charizard ----------------//
+                        if(event.button.x >=90 && event.button.x<=274 && event.button.y>=200 && event.button.y<=269 && Charizard->select == 0 && Character_select<3){
+                            printf("Click sur Charizard %dx|%dy \n",event.button.x,event.button.y);
+                            //------ Affichage de pokemon -----------//
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                            SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Charizard->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Venuzaur --------------------------//
+                        if(event.button.x >= 306 && event.button.x<=492 && event.button.y>=200 && event.button.y<=269 && Vanusaur->select==0 && Character_select<3){
+                            printf("Click sur venusaur %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                            SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Vanusaur->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Totoise ---------------------//
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=200 && event.motion.y<=269 && Tortoise->select==0 && Character_select<3){
+                            printf("Click sur Tortoise %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                            SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Tortoise->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Ariados ---------------------//
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=277 && event.motion.y<=346 && Ariados->select==0 && Character_select<3){
+                            printf("Click sur Ariados %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                            SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Ariados->select=1;
+                            Character_select++;
+                        }
+                        //--------------------------- Button Dragonite ---------------------------//
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=277 && event.motion.y<=346 && Dragonite->select==0 && Character_select<3){
+                            printf("Click sur Dragonite %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                            SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Dragonite->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Onix ---------------------//
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=277 && event.motion.y<=346 && Onix->select==0 && Character_select<3){
+                            printf("Click sur Onix %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                            SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Onix->select = 1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Harbok -----------------------//
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=354 && event.motion.y<=423 && Harbok->select==0 && Character_select<3){
+                            printf("Click sur Harbok %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                            SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Harbok->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Raichu -----------------------//
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=354 && event.motion.y<=423 && Raichu->select == 0 && Character_select<3){
+                            printf("Click sur Raichu %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                            SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Raichu->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Alakazam ----------------------//
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=354 && event.motion.y<=423 && Alakazam->select==0 && Character_select<3){
+                            printf("Click sur Raichu %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                            SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Alakazam->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Pidgeot ----------------------//
+                        if(event.motion.x >=90 && event.motion.x<=274 && event.motion.y>=431 && event.motion.y<=500 && Pidgeot->select==0 && Character_select<3){
+                            printf("Click sur Pidgeot %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[12]->backgroundHeight,90,431);
+                            SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Pidgeot->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Snorlak ----------------------//
+                        if(event.motion.x >= 306 && event.motion.x<=492 && event.motion.y>=431 && event.motion.y<=500 && Snorlak->select==0 && Character_select<3){
+                            printf("Click sur Snorlak %dx|%dy Button Venuzaur \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                            SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Machamp->select ==1){
+                                SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[10]->backgroundHeight,522,431);
+                                SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background); 
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Snorlak->select=1;
+                            Character_select++;
+                        }
+                        //-------------------------- Button Machamp ---------------------//
+                        if(event.motion.x >= 522 && event.motion.x <= 706 && event.motion.y>=431 && event.motion.y<=500 && Machamp->select==0 && Character_select<3){
+                            printf("Click sur Machamp %dx|%dy Button Machamp \n",event.button.x,event.button.y);
+                            SDL_RenderClear(renderer);
+                            limit_fps(frame_limit);
+                            SDL_RectDef(&_background,Texture_Background[2]->backgroundWidth,Texture_Background[2]->backgroundHeight,(WINDOW_WIDTH - Texture_Background[2]->backgroundWidth)/2,(WINDOW_HEIGTH - Texture_Background[2]->backgroundHeight)/2);
+                            SDL_RenderCopy(renderer,Texture_Background[2]->background,NULL,&_background);
+                            SDL_RectDef(&_background,Texture_Background[14]->backgroundWidth,Texture_Background[14]->backgroundHeight,522,431);
+                            SDL_RenderCopy(renderer,Texture_Background[14]->background,NULL,&_background);
+                            if(Charizard->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[3]->backgroundWidth,Texture_Background[3]->backgroundHeight,90,200);
+                                SDL_RenderCopy(renderer,Texture_Background[3]->background,NULL,&_background);
+                            }
+                            if(Vanusaur->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[4]->backgroundWidth,Texture_Background[4]->backgroundHeight,306,200);
+                                SDL_RenderCopy(renderer,Texture_Background[4]->background,NULL,&_background);
+                            }
+                            if(Tortoise->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[5]->backgroundWidth,Texture_Background[5]->backgroundHeight,522,200);
+                                SDL_RenderCopy(renderer,Texture_Background[5]->background,NULL,&_background);
+                            }
+                            if(Ariados->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[6]->backgroundWidth,Texture_Background[6]->backgroundHeight,90,277);
+                                SDL_RenderCopy(renderer,Texture_Background[6]->background,NULL,&_background);
+                            }
+                            if(Dragonite->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[7]->backgroundWidth,Texture_Background[7]->backgroundHeight,306,277);
+                                SDL_RenderCopy(renderer,Texture_Background[7]->background,NULL,&_background);
+                            }
+                            if(Onix->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[8]->backgroundWidth,Texture_Background[8]->backgroundHeight,522,277);
+                                SDL_RenderCopy(renderer,Texture_Background[8]->background,NULL,&_background);
+                            }
+                            if(Harbok->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[9]->backgroundWidth,Texture_Background[9]->backgroundHeight,90,354);
+                                SDL_RenderCopy(renderer,Texture_Background[9]->background,NULL,&_background);
+                            }
+                            if(Raichu->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[10]->backgroundWidth,Texture_Background[10]->backgroundHeight,306,354);
+                                SDL_RenderCopy(renderer,Texture_Background[10]->background,NULL,&_background);
+                            }
+                            if(Alakazam->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[11]->backgroundWidth,Texture_Background[11]->backgroundHeight,522,354);
+                                SDL_RenderCopy(renderer,Texture_Background[11]->background,NULL,&_background);
+                            }
+                            if(Pidgeot->select == 1){
+                                SDL_RectDef(&_background,Texture_Background[12]->backgroundWidth,Texture_Background[10]->backgroundHeight,90,431);
+                                SDL_RenderCopy(renderer,Texture_Background[12]->background,NULL,&_background); 
+                            }
+                            if(Snorlak->select==1){
+                                SDL_RectDef(&_background,Texture_Background[13]->backgroundWidth,Texture_Background[13]->backgroundHeight,306,431);
+                                SDL_RenderCopy(renderer,Texture_Background[13]->background,NULL,&_background);
+                            }
+                            frame_limit = SDL_GetTicks()+FPS_LIMIT;
+                            SDL_RenderPresent(renderer);
+                            Machamp->select=1;
+                            Character_select++;
+                        }
+
                     }
                     //event.motion.x
                     break;
@@ -551,7 +1736,18 @@ int main(int arg,char **argv){
     SDL_DestroyTexture(Texture_Background[0]->background);
     SDL_DestroyTexture(Texture_Background[1]->background);
     SDL_DestroyTexture(Texture_Background[2]->background);
-
+    SDL_DestroyTexture(Texture_Background[3]->background);
+    SDL_DestroyTexture(Texture_Background[4]->background);
+    SDL_DestroyTexture(Texture_Background[5]->background);
+    SDL_DestroyTexture(Texture_Background[6]->background);
+    SDL_DestroyTexture(Texture_Background[7]->background);
+    SDL_DestroyTexture(Texture_Background[8]->background);
+    SDL_DestroyTexture(Texture_Background[9]->background);
+    SDL_DestroyTexture(Texture_Background[10]->background);
+    SDL_DestroyTexture(Texture_Background[11]->background);
+    SDL_DestroyTexture(Texture_Background[12]->background);
+    SDL_DestroyTexture(Texture_Background[13]->background);
+    SDL_DestroyTexture(Texture_Background[14]->background);
     SDL_Destroyed(renderer,window,NULL);
     SDL_Quit();
     return EXIT_SUCCESS;
