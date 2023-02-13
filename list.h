@@ -39,6 +39,6 @@ pokemon pop(pile Pile);
 //renvoie juste le premier élément
 pokemon top(pile Pile);
 
-// pokemon pop_selection(pile Pile,int num);
+pokemon pop_selection(pile Pile,int num);
 
 void print_stack(pile Pile);
