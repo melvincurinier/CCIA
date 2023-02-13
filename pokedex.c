@@ -465,6 +465,7 @@ void afficher_pokedex(pile p){
     int i;
     cellule *cel=p->top;
     for (i=0;i<p->size;i++){
+        printf("%d - ",i);
         afficher_pokemon(cel->poke);
         cel=cel->suiv;
     }
