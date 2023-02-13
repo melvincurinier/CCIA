@@ -11,19 +11,30 @@ equipe init_equipe(pile p){
     return team;
 }
 
-// equipe choisir_equipe(pile p){
-//     equipe E;
-//     E.nb_vivant=6;
-//     int numero;
-//     for(int i=0; i<6;i++){
-//         afficher_pokedex(p);
-//         printf("Choississez un pokemon");
-//         scanf("%d",&numero);
-//         E.nb_vivant++;
-//         E.liste_pokemon[i]=pop_selection(p,numero);
-//     }
-//     return E;
-// }
+equipe init_equipe_alea(pile p){
+    equipe team;
+    team.nb_vivant=3;
+    srand(time(NULL));
+    
+    for (int j=0; j<3;j++){
+        int num = rand() % 9;
+        team.liste_pokemon[j]=pop_selection(p,num);
+    }
+    return team;
+}
+
+equipe choisir_equipe(pile p){
+    equipe E;
+    E.nb_vivant=3;
+    int numero;
+    for(int i=0; i<3;i++){
+        afficher_pokedex(p);
+        printf("Choississez un pokemon : ");
+        scanf("%d",&numero);
+        E.liste_pokemon[i]=pop_selection(p,numero);
+    }
+    return E;
+}
 
 terrain init_terrain(equipe J1, equipe J2){
     terrain t;
