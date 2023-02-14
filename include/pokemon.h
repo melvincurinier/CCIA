@@ -7,7 +7,13 @@ typedef enum {neutre, paraliser, empoisoner, endormie, brulure, confusion, geler
 
 typedef enum {rien, pluie, tempete, grele, soleil} statut2;
 
-typedef enum {flammeche, pistolet_a_eau, tranche_herbe, cage_eclair, berceuse, feu_follet, onde_folie, gele, toxic, danse_lames, repli, mimi_queue, rugissement, danse_pluie, zenith, tempeteneige, tempete_de_sable } capacites;
+typedef enum { surf, exuviation, aurasphere, laser_glace, exploforce, lance_flamme, vent_violent, toxic,croissance, giga_sangsue, puissance_cachee, 
+bomb_beurk, direct_toxic, psyko, vampirisme, ombre_portee, danse_draco, seisme, draco_griffe, poing_feu,
+cavalerie_lourde, queue_fer, lame_de_roc, machination, ball_ombre, tonnerre, Lame_dair, aile_acier, plaquage, sabotage, pisto_poing, croc_feu, eruction,
+close_combat, ultralaser, machouille} capacites;
+
+//typedef enum {flammeche, pistolet_a_eau, tranche_herbe, cage_eclair, berceuse, feu_follet, onde_folie, gele, toxic, danse_lames, repli, mimi_queue, rugissement, danse_pluie, zenith, tempeteneige, tempete_de_sable } capacites;
+
 
 
 typedef struct{
@@ -63,14 +69,15 @@ typedef struct{
 typedef struct{
     int nb_vivant;
     // le pokemon à l'indice 0 sera celui sur le terrain
-    pokemon *liste_pokemon[6];
+    pokemon liste_pokemon[6];
 }  equipe ;
 
 typedef struct{
     statut2 meteo;
+    equipe J1;
+    equipe J2;
     int tour_meteo;
-    pokemon * pokeJ1;
-    pokemon * pokeJ2;
+    int toucher; //seulement pour l'ia
 }  terrain ;
 
 

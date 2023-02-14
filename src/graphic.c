@@ -57,7 +57,7 @@ Background initBackground(SDL_Renderer * _Renderer,SDL_Window * _Window,char * _
 //------------------ Creation de tableau stockant nos background ----------------//
 Background * initBackgroundTable(){
     //char * Texture[4]={"sprites/sprite_background_menu.png","sprites/sprite_button_play.png","sprites/Choose_player_menu.png",""};
-    Background * backgroundTable = malloc(15*sizeof(Background));   
+    Background * backgroundTable = malloc(16*sizeof(Background));   
     for(int i=0;i<15;i++){
         backgroundTable[i]=NULL;
     }

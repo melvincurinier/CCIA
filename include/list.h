@@ -2,7 +2,7 @@
 #include "pokemon.h"
 
 struct cel{
-    pokemon *poke;
+    pokemon poke;
     struct cel *suiv;
 };
 typedef struct cel cellule;
@@ -22,9 +22,9 @@ int is_empty_list(List l) ;
 //crée une lune liste vide
 List create_empty_list();
 //ajoute un élément a la liste
-List add (pokemon *e, List l);
+List add (pokemon e, List l);
 //renvoie le premier élément de la liste
-pokemon *head(List l) ;
+pokemon head(List l) ;
 //renvoie la liste sans le premier élément
 List tail(List l) ;
 
@@ -33,9 +33,12 @@ List tail(List l) ;
 pile create_empty_stack();
 int is_empty_stack();
 //ajoute en tete un élément
-void push(pokemon *e, pile Pile);
+void push(pokemon e, pile Pile);
 //enleve le premier élément de la pile et renvoie sa valeur
-pokemon *pop(pile Pile);
+pokemon pop(pile Pile);
 //renvoie juste le premier élément
-pokemon *top(pile Pile);
+pokemon top(pile Pile);
+
+pokemon pop_selection(pile Pile,int num);
+
 void print_stack(pile Pile);

@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
-#include "joueur.h"
+#include "ia.h"
 //----- Taille Fenêtre -----//
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGTH 600 
