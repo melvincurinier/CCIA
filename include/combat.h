@@ -10,7 +10,6 @@ equipe init_equipe(pile p);
 equipe init_equipe_alea(pile p);
 
 equipe choisir_equipe(pile p);
-
 //initialise la meteo a neutre
 //dans le futur gerer si des effest son apliqués au terrain
 terrain init_terrain(equipe J1, equipe J2);
@@ -86,4 +85,6 @@ terrain applique_attaque(terrain T, int joueur ,attaques att, int tour);
 int mort(pokemon poke);
 //retourne une equipe sans le pokemon mort
 terrain enlever_pokemon_equipe(terrain T, int joueur , pokemon poke);
+
+
 

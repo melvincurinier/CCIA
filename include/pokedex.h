@@ -28,3 +28,7 @@ void afficher_pokemon(pokemon poke);
 
 //affiche tout les pokemon que l'on a créer
 void afficher_pokedex(pile p);
+
+
+
+

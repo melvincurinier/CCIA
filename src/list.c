@@ -68,23 +68,32 @@ pokemon top(pile Pile){
     return head(Pile->top);
 }
 
-pokemon pop_selection(pile Pile,int num){
-    if(num==0){
-        return pop(Pile);
-    }
-    else{
-        cellule *tmp = Pile->top;
-        cellule *tmp2;
-        for (int i=0;i<num;i++){
-            tmp2=tmp;
-            tmp=tail(tmp);
-        }
+// pokemon pop_selection(pile Pile,int num){
+//     if(num==0){
+//         return pop(Pile);
+//     }
+//     else{
+//         cellule *tmp = Pile->top;
+//         cellule *tmp2;
+//         for (int i=0;i<num;i++){
+//             tmp2=tmp;
+//             tmp=tail(tmp);
+//         }
         
-        tmp2->suiv = tmp->suiv;
-        pokemon poke = tmp->poke;
-        free(tmp);
-        Pile->size=Pile->size -1;
-        return poke;
+//         tmp2->suiv = tmp->suiv;
+//         pokemon poke = tmp->poke;
+//         free(tmp);
+//         Pile->size=Pile->size -1;
+//         return poke;
+//     }
+// }
+
+pokemon pop_selection(pile Pile, int num){
+    cellule *tmp = Pile->top;
+    for(int i=0;i<num;i++){
+        tmp=tmp->suiv;
     }
+    return tmp->poke;
 }
+
 

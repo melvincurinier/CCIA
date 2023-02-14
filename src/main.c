@@ -1,4 +1,5 @@
 #include "graphic.h"
+
     //char * _nom[12] = {"Charizard","Venusaur","Tortoise","Ariados","Dragonite","Onix","Harbok","Raichu","Alakazam","Pidgeot","Snorlak","Machamp"};
     //char * _SourceFace[12] = {"sprites/Sprite_006_O.png","sprites/Sprite_003_O.png","sprites/Sprite_009_O.png","sprites/Sprite_168_A.png","sprites/Sprite_149_O.png","sprites/Sprite_095_A.png","sprites/Sprite_024_O.png","sprites/Sprite_026_O.png","sprites/Sprite_065_O.png","sprites/Sprite_018_A.png","sprites/Sprite_143_O.png","sprites/Sprite_068_O.png"};
     //char * _SourceDos[12] = {"Sprite_006_dos_OA.png","Sprite_003_dos_OA.png","Sprite_009_dos_OA.png","Sprite_168_dos_OA.png","Sprite_149_dos_OA.png","Sprite_095_dos_OA.png","Sprite_024_dos_OA.png","Sprite_026_dos_OA.png","Sprite_065_dos_OA.png","Sprite_018_dos_OA.png","Sprite_143_dos_OA.png","Sprite_068_dos_OA.png"};

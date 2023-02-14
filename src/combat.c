@@ -1,5 +1,5 @@
 #include "combat.h"
-
+#include <time.h>
 /*-------------- Partie initialisation ----------------*/
 
 equipe init_equipe(pile p){
@@ -14,10 +14,9 @@ equipe init_equipe(pile p){
 equipe init_equipe_alea(pile p){
     equipe team;
     team.nb_vivant=3;
-    srand(time(NULL));
     
     for (int j=0; j<3;j++){
-        int num = rand() % 9;
+        int num = 11-j;
         team.liste_pokemon[j]=pop_selection(p,num);
     }
     return team;
