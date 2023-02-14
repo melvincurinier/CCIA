@@ -1,12 +1,10 @@
 #include "node.h"
 
-list_t openlist;
-
 pokemon choix_switch_ia_random(terrain T, int joueur);
 
 Item * minimax(Item *node, int depth, int player, int tour, Item *bestMove);
 
-Item * astar(int tour);
+Item * astar(list_t *openlist,int tour);
 
 Item *back_track(Item *node);
 

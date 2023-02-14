@@ -59,11 +59,11 @@ void minimax(Item *node, int depth, int player, int tour, Item *bestMove){
 */
 
 
-Item * astar(int tour){
+Item * astar(list_t *openlist,int tour){
     Item *node, *child;
     int i,j;
-    while (listCount(&openlist) != 0){
-        node = popBest(&openlist);
+    while (listCount(openlist) != 0){
+        node = popBest(openlist);
         //arret de la recherche si on a réussi a finir la partie 
         //ou si la pofondeur dépasse la profondeur max
         if (partie_fini(node->T) || node->depth >= 10 ) {
@@ -73,12 +73,12 @@ Item * astar(int tour){
             //création de toutes les possibilités d'attaque de l'ia
             for( i=0; i < node->T.J2.liste_pokemon[0].nb_attaque; i++){
                 child = get_child_att(node, node->T.J2.liste_pokemon[0].attaque[i],2, tour);
-                    addFirst(&openlist,child);
+                    addFirst(openlist,child);
                 }
             //création de toutes les possibilités de switch de l'ia
             for( j=1; j < node->T.J2.nb_vivant; j++ ){
                 child = get_child_swt(node,node->T.J2.liste_pokemon[j],2);
-                    addFirst(&openlist,child);
+                    addFirst(openlist,child);
                 }
         }
     }  

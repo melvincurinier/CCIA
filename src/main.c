@@ -1,5 +1,5 @@
 #include "graphic.h"
-
+#include "ia.h"
     //char * _nom[12] = {"Charizard","Venusaur","Tortoise","Ariados","Dragonite","Onix","Harbok","Raichu","Alakazam","Pidgeot","Snorlak","Machamp"};
     //char * _SourceFace[12] = {"sprites/Sprite_006_O.png","sprites/Sprite_003_O.png","sprites/Sprite_009_O.png","sprites/Sprite_168_A.png","sprites/Sprite_149_O.png","sprites/Sprite_095_A.png","sprites/Sprite_024_O.png","sprites/Sprite_026_O.png","sprites/Sprite_065_O.png","sprites/Sprite_018_A.png","sprites/Sprite_143_O.png","sprites/Sprite_068_O.png"};
     //char * _SourceDos[12] = {"Sprite_006_dos_OA.png","Sprite_003_dos_OA.png","Sprite_009_dos_OA.png","Sprite_168_dos_OA.png","Sprite_149_dos_OA.png","Sprite_095_dos_OA.png","Sprite_024_dos_OA.png","Sprite_026_dos_OA.png","Sprite_065_dos_OA.png","Sprite_018_dos_OA.png","Sprite_143_dos_OA.png","Sprite_068_dos_OA.png"};
@@ -18,7 +18,23 @@ int main(int arg,char **argv){
     int index = MAIN_MENU;
     int Character_select=0;
     //----------- Initialisation des paramètre in game & de l'ia -----------//
-    
+    // J2 = IA
+    list_t openlist;
+    int choix1,choix2;
+    attaques att1,att2;
+    pokemon poke1,poke2;
+    int tour=0;
+    int touch;
+
+    pile p=create_empty_stack();
+    creer_pokedex(p);
+    equipe J1,J2;
+    J1.nb_vivant=0;
+    terrain T;
+    int joueur = 0;
+    initList(&openlist);
+    Item *node = nodeAlloc();
+    Item *res_ia = nodeAlloc();
     //-------------- Initialisation des tableaux de texture -------------//
     //SDL_Texture ** Texture_Background;
     //pokemon_texture * Texture_Pokemon = CreatePokemonTable();
@@ -115,6 +131,517 @@ int main(int arg,char **argv){
     //-------------------------------------------------------//
     SDL_RenderPresent(renderer);/*Actualise le rendu*/
     while(program_lauched){
+        while(!partie_fini(T) && index == GAMEPLAY){
+        
+//-------------------------------affichage du terrain ----------------------//
+            
+            while(SDL_PollEvent(&event)){
+                
+    // -------------------- tour de J1 ------------------------------ //
+                //printf("J1 : ");
+                //choix1 = choix_action_joueur();
+            //if(choix1 == 0){
+                //printf("J1: ");
+                //att1= choix_att_joueur(T.J1.liste_pokemon[0]);
+            //}
+            //else{
+                //printf("J1 : ");
+                //choix_switch_joueur(T.J1);
+            //}
+                if(joueur == 0){
+                    switch (event.type)
+                    {
+                    case SDL_QUIT://pour quitter le programme avec la croix
+                        program_lauched= SDL_FALSE;
+                        break;
+
+                    case SDL_MOUSEBUTTONDOWN:
+                    //------------------------ Choix des attaques ---------------------------//
+                        if(event.button.x >= 0 && event.button.x <= 185 && event.button.y >= 451 && event.button.y <= 500 ){
+                            afficher_terrain(T);
+                            att1=T.J1.liste_pokemon[0].attaque[0];
+                            touch = toucher(T.J1.liste_pokemon[0], att1);
+                            if(touch==0){
+                            printf("le pokemon de J1 a raté son attaque\n");
+                            }
+                            //l'attaque a reussi
+                            else if(touch==1){
+                            T = applique_attaque(T,1,att1,tour);
+                            } 
+                            //le pokemon se blesse dans sa confusion
+                            else if(touch==2){
+                            T.J1.liste_pokemon[0] = applique_confusion(T,T.J1.liste_pokemon[0],att1);
+                            }
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                                printf("J1 : ");
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                            }
+                            joueur = 1;
+                        }
+
+                        if(event.button.x >= 205 && event.button.x <= 392 && event.button.y >= 451 && event.button.y <= 500 ){
+                            afficher_terrain(T);
+                            att1=T.J1.liste_pokemon[0].attaque[1];
+                            touch = toucher(T.J1.liste_pokemon[0], att1);
+                            if(touch==0){
+                            printf("le pokemon de J1 a raté son attaque\n");
+                            }
+                            //l'attaque a reussi
+                            else if(touch==1){
+                            T = applique_attaque(T,1,att1,tour);
+                            } 
+                            //le pokemon se blesse dans sa confusion
+                            else if(touch==2){
+                            T.J1.liste_pokemon[0] = applique_confusion(T,T.J1.liste_pokemon[0],att1);
+                            }
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                                printf("J1 : ");
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                            }
+                            joueur = 1;
+                        }
+
+                        if(event.button.x >= 405 && event.button.x <= 492 && event.button.y >= 451 && event.button.y <= 500 ){
+                            afficher_terrain(T);
+                            att1=T.J1.liste_pokemon[0].attaque[2];
+                            touch = toucher(T.J1.liste_pokemon[0], att1);
+                            if(touch==0){
+                            printf("le pokemon de J1 a raté son attaque\n");
+                            }
+                            //l'attaque a reussi
+                            else if(touch==1){
+                            T = applique_attaque(T,1,att1,tour);
+                            } 
+                            //le pokemon se blesse dans sa confusion
+                            else if(touch==2){
+                            T.J1.liste_pokemon[0] = applique_confusion(T,T.J1.liste_pokemon[0],att1);
+                            }
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                                printf("J1 : ");
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                            }
+                            joueur = 1;
+                        }
+
+                        if(event.button.x >= 605 && event.button.x <= 800 && event.button.y >= 451 && event.button.y <= 500 ){
+                            afficher_terrain(T);
+                            att1=T.J1.liste_pokemon[0].attaque[3];
+                            touch = toucher(T.J1.liste_pokemon[0], att1);
+                            if(touch==0){
+                            printf("le pokemon de J1 a raté son attaque\n");
+                            }
+                            //l'attaque a reussi
+                            else if(touch==1){
+                            T = applique_attaque(T,1,att1,tour);
+                            } 
+                            //le pokemon se blesse dans sa confusion
+                            else if(touch==2){
+                            T.J1.liste_pokemon[0] = applique_confusion(T,T.J1.liste_pokemon[0],att1);
+                            }
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                                printf("J1 : ");
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                            }
+                            joueur = 1;
+                        }
+                    //------------------------ Choix du changement de pokemon ----------------//
+                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                            afficher_terrain(T);
+                            poke1 = T.J1.liste_pokemon[1];
+                            T = switch_pokemon(T,1,poke1);
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                            }
+                            joueur = 1;
+                        }
+                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                            afficher_terrain(T);
+                            poke1 = T.J1.liste_pokemon[2];
+                            T = switch_pokemon(T,1,poke1);
+                            //----------------------- Gestion des statut ---------------------------//
+
+                            T.J1.liste_pokemon[0]=gestion_statut(T.J1.liste_pokemon[0], tour - T.J1.liste_pokemon[0].tour_etat);
+
+                            //----------------------- Gestion de la meteo ---------------------------//
+                            T = gestion_meteo(T,1, tour - T.tour_meteo);
+
+                            //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+
+                            if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                                T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                                printf("Le pokemon de J2 est mort ! \n");
+                                poke2 = best_switch_ia(T);
+                                T = switch_pokemon(T, 2, poke2);
+                            }
+                            else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                                T.J2.nb_vivant=0;
+                            }
+                            if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                                //on retire le pokemon mort de l'equipe
+                                T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                                //on en choisie un nouveau
+                                switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                            }
+                            //dans ce cas c'est le dernier pokemon qui viens de mourir
+                            else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                                //on met le nb de vivant a 0 pour que la partie se termine
+                                T.J1.nb_vivant=0;
+                                
+                            }
+                            joueur = 1;
+                        }
+                        break;
+
+                    }
+                }
+                // -------------------- tour de J2 ------------------------------ //
+                else if(joueur == 1){
+                    afficher_terrain(T);
+                    printf("J2 :");
+            
+                    initNode( node,T);
+                    addFirst(&openlist,node);
+                    res_ia = astar( &openlist ,tour);
+                    // choix_ia = back_track(res_ia,tour_affiler);
+                    // if( choix_ia->T.J1.liste_pokemon[0].nom != T.J1.liste_pokemon[0].nom  || choix_ia->T.meteo != T.meteo || choix_ia->parent->T.J1.liste_pokemon[0].stat.PV == T.J1.liste_pokemon[0].stat.PV){
+                    //     res_ia = bfs( tour);
+                    //     choix_ia = back_track(res_ia,tour_affiler);
+                    //     tour_affiler=0;
+                    // }
+                    // }
+                    // initNode(node, T);
+                    // res_ia = solution_secours(node, tour);
+                    choix2 = res_ia->choix;
+                    if(choix2 == 0){
+                        att2 = res_ia->AT;
+                        printf("l'attaque choisi par l'ia : ");
+                        afficher_attaque(att2);
+                        printf("\n");
+                    }
+                    else{
+                        printf("J2 : ");
+                        poke2=res_ia->poke;
+                        printf("le pokemon choisi par l'ia : %s", poke2.nom);
+
+                    }
+                    // res = ia(T,tour);
+                    // choix2 = res->choix;
+                    // if(choix2 == 0){
+                    //     att2 = res->AT;
+                    // }
+                    // else if (choix2 ==1) {
+                    //     poke2 = res->poke;
+                    // }
+        
+                if(choix2 == 0){
+                    touch = toucher(T.J2.liste_pokemon[0], att2);
+                    if(touch==0){
+                        printf("le pokemon de J2 a raté son attaque\n");
+                }
+                    //l'attaque a reussi
+                    else if(touch==1){
+                        T = applique_attaque(T,2,att2,tour);
+                    }
+                //le pokemon se blesse dans sa confusion
+                    else if(touch==2){
+                        T.J2.liste_pokemon[0] = applique_confusion(T,T.J2.liste_pokemon[0],att2);
+                    }
+                }
+                else {
+                    T = switch_pokemon(T,2,poke2);
+                }
+                //----------------------- Gestion des statut ---------------------------//
+
+                T.J2.liste_pokemon[0]=gestion_statut(T.J2.liste_pokemon[0], tour - T.J2.liste_pokemon[0].tour_etat);
+
+                //----------------------- Gestion de la meteo ---------------------------//
+                T = gestion_meteo(T,2, tour - T.tour_meteo);
+            
+                //----------------------- CAS OU UN POKEMON SUR LE TERRAIN EST MORT ---------------------------//
+                if(mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant>1){
+                    //on retire le pokemon mort de l'equipe
+                    T = enlever_pokemon_equipe(T, 1,T.J1.liste_pokemon[0]);
+                    //on en choisie un nouveau
+                    printf("Votre pokemon est mort veuillez en choisir un nouveau : \n");
+                    printf("J1 : ");
+                    switch (event.type)
+                                {
+                                    case SDL_QUIT://pour quitter le programme avec la croix
+                                    program_lauched= SDL_FALSE;
+                                    break;
+
+                                    case SDL_MOUSEBUTTONDOWN:
+                                        if(event.button.x >= 0 && event.button.x <= 126 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[1];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                        if(event.button.x >= 138 && event.button.x <= 261 && event.button.y >= 80 && event.button.y <= 590 ){
+                                            poke1 = T.J1.liste_pokemon[2];
+                                            T = switch_pokemon(T,1,poke1);
+                                        }
+                                    break;
+
+                                }
+                }
+                //dans ce cas c'est le dernier pokemon qui viens de mourir
+                else if (mort(T.J1.liste_pokemon[0]) && T.J1.nb_vivant <=1 ){
+                    //on met le nb de vivant a 0 pour que la partie se termine
+                    T.J1.nb_vivant=0;
+                }
+                if(mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant>1){
+                    T=enlever_pokemon_equipe(T,2,T.J2.liste_pokemon[0]);
+                    printf("Le pokemon de J2 est mort ! \n");
+                    poke2 = best_switch_ia(T);
+                    printf("l'ia switch sur : %s\n",poke2.nom);
+                T = switch_pokemon(T, 2, poke2);
+                }
+                else if (mort(T.J2.liste_pokemon[0]) && T.J2.nb_vivant <=1 ){
+                    T.J2.nb_vivant=0;
+                }
+            
+                tour++;
+                cleanupList(&openlist);
+                joueur = 0; ; //changement de joueur
+            }
+        
+            }
+        }
         while(SDL_PollEvent(&event)){
             switch (event.type)
             {
@@ -841,6 +1368,10 @@ int main(int arg,char **argv){
                             SDL_RenderCopy(renderer,Texture_Background[15]->background,NULL,&_background);
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            //------ mise en place du terrain avec les pokemon selctionner et de l'ia --------//
+                            printf("%d",J1.nb_vivant);
+                            J2 = init_equipe_alea (p);
+                            T = init_terrain(J1,J2);
                             index=GAMEPLAY;
                         }
                         //----------------------------- Button Charizard ----------------//
@@ -899,6 +1430,11 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,10);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,10);
+                            else J1.liste_pokemon[2]=pop_selection(p,10);
+                            afficher_pokemon(J1.liste_pokemon[0]);
+                            J1.nb_vivant++;
                             Charizard->select=1;
                             Character_select++;
                         }
@@ -957,6 +1493,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,9);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,9);
+                            else J1.liste_pokemon[2]=pop_selection(p,9);
+                            J1.nb_vivant++;
                             Vanusaur->select=1;
                             Character_select++;
                         }
@@ -1015,6 +1555,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,11);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,11);
+                            else J1.liste_pokemon[2]=pop_selection(p,11);
+                            J1.nb_vivant++;
                             Tortoise->select=1;
                             Character_select++;
                         }
@@ -1073,6 +1617,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,8);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,8);
+                            else J1.liste_pokemon[2]=pop_selection(p,8);
+                            J1.nb_vivant++;
                             Ariados->select=1;
                             Character_select++;
                         }
@@ -1131,6 +1679,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,7);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,7);
+                            else J1.liste_pokemon[2]=pop_selection(p,7);
+                            J1.nb_vivant++;
                             Dragonite->select=1;
                             Character_select++;
                         }
@@ -1189,6 +1741,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,6);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,6);
+                            else J1.liste_pokemon[2]=pop_selection(p,6);
+                            J1.nb_vivant++;
                             Onix->select = 1;
                             Character_select++;
                         }
@@ -1247,6 +1803,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,0);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,0);
+                            else J1.liste_pokemon[2]=pop_selection(p,0);
+                            J1.nb_vivant++;
                             Harbok->select=1;
                             Character_select++;
                         }
@@ -1305,6 +1865,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,5);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,5);
+                            else J1.liste_pokemon[2]=pop_selection(p,5);
+                            J1.nb_vivant++;
                             Raichu->select=1;
                             Character_select++;
                         }
@@ -1363,6 +1927,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,4);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,4);
+                            else J1.liste_pokemon[2]=pop_selection(p,4);
+                            J1.nb_vivant++;
                             Alakazam->select=1;
                             Character_select++;
                         }
@@ -1421,6 +1989,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,3);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,3);
+                            else J1.liste_pokemon[2]=pop_selection(p,3);
+                            J1.nb_vivant++;
                             Pidgeot->select=1;
                             Character_select++;
                         }
@@ -1479,6 +2051,10 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0) J1.liste_pokemon[0]=pop_selection(p,2);
+                            else if(J1.nb_vivant == 1)J1.liste_pokemon[1]=pop_selection(p,2);
+                            else J1.liste_pokemon[2]=pop_selection(p,2);
+                            J1.nb_vivant++;
                             Snorlak->select=1;
                             Character_select++;
                         }
@@ -1537,6 +2113,16 @@ int main(int arg,char **argv){
                             }
                             frame_limit = SDL_GetTicks()+FPS_LIMIT;
                             SDL_RenderPresent(renderer);
+                            if(J1.nb_vivant == 0){
+                                J1.liste_pokemon[0]=pop_selection(p,1);
+                            }
+                            else if(J1.nb_vivant == 1){
+                                J1.liste_pokemon[1]=pop_selection(p,1);
+                            }
+                            else {
+                                J1.liste_pokemon[2]=pop_selection(p,1);
+                            }
+                            J1.nb_vivant++;
                             Machamp->select=1;
                             Character_select++;
                         }
@@ -1594,6 +2180,7 @@ int main(int arg,char **argv){
     SDL_DestroyTexture(Texture_Background[12]->background);
     SDL_DestroyTexture(Texture_Background[13]->background);
     SDL_DestroyTexture(Texture_Background[14]->background);
+    SDL_DestroyTexture(Texture_Background[15]->background);
     SDL_Destroyed(renderer,window,NULL);
     SDL_Quit();
     return EXIT_SUCCESS;
